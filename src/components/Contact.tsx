@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, type ReactElement } from "react";
 import {
   m,
   LazyMotion,
@@ -32,9 +32,9 @@ import {
 
 /* ============================= CONFIG ============================= */
 const EMAILJS_CONFIG = {
-  serviceId: "YOUR_SERVICE_ID",
-  templateId: "YOUR_TEMPLATE_ID",
-  publicKey: "YOUR_PUBLIC_KEY",
+  serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || "YOUR_SERVICE_ID",
+  templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || "YOUR_TEMPLATE_ID",
+  publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || "YOUR_PUBLIC_KEY",
 };
 
 /* ============================= VARIANTS =========================== */
@@ -52,7 +52,9 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function trySendEmail(params: Record<string, any>) {
   const live =
-    EMAILJS_CONFIG.serviceId && !EMAILJS_CONFIG.serviceId.startsWith("YOUR");
+    EMAILJS_CONFIG.serviceId &&
+    EMAILJS_CONFIG.templateId &&
+    EMAILJS_CONFIG.publicKey;
 
   if (live) {
     try {
@@ -451,7 +453,7 @@ export default function Contact() {
         </div>
 
         {/* small CSS helpers */}
-        <style jsx>{`
+        <style>{`
           .field {
             transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease;
           }
@@ -513,7 +515,7 @@ function FlowStatus({
   step: "queued" | "encrypt" | "uplink" | "done" | "error";
   errorMsg?: string;
 }) {
-  const map: Record<typeof step, { icon: JSX.Element; text: string; sub?: string }> = {
+  const map: Record<typeof step, { icon: ReactElement; text: string; sub?: string }> = {
     queued: { icon: <MessageSquare className="w-4 h-4" />, text: "Queued →", sub: "preparing payload" },
     encrypt: { icon: <Terminal className="w-4 h-4" />, text: "Encrypting →", sub: "AES-256" },
     uplink: { icon: <Send className="w-4 h-4" />, text: "Uplink →", sub: "secure channel" },

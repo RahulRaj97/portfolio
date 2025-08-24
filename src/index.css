@@ -91,17 +91,6 @@
 }
 
 @layer components {
-  /* Enhanced glass effect with better blur and borders */
-  .glass-effect {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  }
-  
-  .glass-effect:hover {
-    @apply bg-white/10 border-white/20;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  }
-  
   /* Enhanced gradient text with better colors */
   .gradient-text {
     @apply bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent;
@@ -202,7 +191,7 @@
   
   /* Enhanced tech stack tags */
   .tech-tag {
-    @apply px-4 py-3 glass-effect rounded-xl text-sm font-semibold transition-all duration-300;
+    @apply px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300;
     position: relative;
     overflow: hidden;
     min-height: 3rem;
@@ -234,7 +223,7 @@
   
   /* Enhanced social links */
   .social-link {
-    @apply p-5 glass-effect rounded-full transition-all duration-500 relative;
+    @apply p-5 rounded-full transition-all duration-500 relative;
     position: relative;
     overflow: hidden;
   }

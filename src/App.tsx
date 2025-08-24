@@ -8,7 +8,7 @@ import Contact from './components/Contact'
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-br from-earth-50 via-warm-50 to-forest-50">
+      <div className="min-h-screen bg-black">
         <Routes>
           <Route path="/" element={
             <>

@@ -7,9 +7,9 @@ import {
   domAnimation,
   useReducedMotion,
   AnimatePresence,
+  type Variants,
 } from "framer-motion";
-import emailjs from '@emailjs/browser';
-import type { Variants } from "framer-motion";
+import emailjs from "@emailjs/browser";
 import {
   Send,
   Mail,
@@ -37,20 +37,13 @@ const EMAILJS_CONFIG = {
   publicKey: "YOUR_PUBLIC_KEY",
 };
 
-/* ============================= BG STARS =========================== */
-const STARS = Array.from({ length: 24 }).map((_, i) => ({
-  x: (i * 137.5) % 100,
-  y: (i * 41.8) % 100,
-  delay: (i % 8) * 0.2,
-}));
-
 /* ============================= VARIANTS =========================== */
 const container: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.12 } },
 };
 const item: Variants = {
-  hidden: { y: 22, opacity: 0 },
+  hidden: { y: 18, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { duration: 0.45, ease: "easeOut" } },
 };
 
@@ -105,7 +98,7 @@ export default function Contact() {
         label: "EMAIL",
         value: "rahule.lohana97@gmail.com",
         href: "mailto:rahule.lohana97@gmail.com",
-        color: "from-cyan-500 to-blue-500",
+        color: "from-emerald-500 to-teal-500",
         copyable: true,
       },
       {
@@ -113,21 +106,23 @@ export default function Contact() {
         label: "GITHUB",
         value: "github.com/rahulraj97",
         href: "https://github.com/rahulraj97",
-        color: "from-green-500 to-emerald-500",
+        // Brand-correct GitHub dark (optional). You can switch to emerald if you prefer.
+        color: "from-[#24292F] to-[#24292F]",
       },
       {
         icon: Linkedin,
         label: "LINKEDIN",
         value: "linkedin.com/in/rahulraj97",
         href: "https://www.linkedin.com/in/rahulraj97",
-        color: "from-purple-500 to-pink-500",
+        // ✅ LinkedIn brand blue fix
+        color: "from-[#0A66C2] to-[#0A66C2]",
       },
       {
         icon: MapPin,
         label: "LOCATION",
         value: "Augsburg, Germany",
         href: undefined,
-        color: "from-orange-500 to-red-500",
+        color: "from-emerald-400 to-teal-500",
       },
     ],
     []
@@ -164,9 +159,9 @@ export default function Contact() {
 
     try {
       if (!reduce) {
-        await sleep(350);
+        await sleep(300);
         setFlowStep("encrypt");
-        await sleep(500);
+        await sleep(450);
         setFlowStep("uplink");
       }
 
@@ -187,7 +182,7 @@ export default function Contact() {
       setTimeout(() => {
         setForm({ name: "", email: "", subject: "", message: "", company: "" });
         setFlowStep("idle");
-      }, 3500);
+      }, 3200);
     } catch {
       setSubmitting(false);
       setFlowStep("error");
@@ -200,7 +195,7 @@ export default function Contact() {
       await navigator.clipboard.writeText("rahule.lohana97@gmail.com");
       setCopied(true);
       if (copyTimer.current) window.clearTimeout(copyTimer.current);
-      copyTimer.current = window.setTimeout(() => setCopied(false), 1800);
+      copyTimer.current = window.setTimeout(() => setCopied(false), 1600);
     } catch {}
   };
 
@@ -208,43 +203,40 @@ export default function Contact() {
     <LazyMotion features={domAnimation}>
       <section
         id="contact"
-        className="relative min-h-screen py-24 overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-[15px] md:text-[16px]"
+        className="relative min-h-screen py-24 overflow-hidden bg-gradient-to-b from-emerald-50 via-white to-emerald-50"
       >
-        {/* grid + tiny stars */}
+        {/* soft grid to avoid emptiness */}
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-[.06] pointer-events-none"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px)
+              linear-gradient(rgba(16,185,129,.18) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(16,185,129,.18) 1px, transparent 1px)
             `,
-            backgroundSize: "40px 40px",
+            backgroundSize: "56px 56px",
           }}
         />
-        <div className="absolute inset-0 pointer-events-none">
-          {STARS.map((s, i) => (
-            <m.span
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.15, 0.5, 0.15] }}
-              transition={{ duration: 3.2, delay: s.delay, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute w-[2px] h-[2px] bg-cyan-300/70 rounded-full"
-              style={{ left: `${s.x}%`, top: `${s.y}%` }}
-            />
-          ))}
-        </div>
 
-        <div className="relative z-10 mx-auto px-6 max-w-7xl xl:max-w-[90rem]">
+        <div className="relative z-10 mx-auto px-6 max-w-7xl xl:max-w-[92rem]">
           {/* Header */}
-          <m.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-            <m.p variants={item} className="font-mono text-cyan-300/90 text-xs tracking-widest mb-3">
-              &gt; COMMS_GATE: SECURE_CHANNEL
+          <m.div
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="text-center mb-14"
+          >
+            <m.p variants={item} className="font-mono text-emerald-700/80 text-xs tracking-widest mb-3">
+              &gt; CONTACT_GATEWAY
             </m.p>
+
+            {/* ✅ Leading + padding fixed so descenders (g/j/y) don’t clip */}
             <m.h2
               variants={item}
-              className="text-6xl md:text-7xl font-black bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent"
+              className="text-5xl md:text-6xl xl:text-7xl font-extrabold tracking-tight leading-[1.12] md:leading-[1.1] pb-1
+                         bg-gradient-to-r from-emerald-700 via-teal-700 to-slate-800 bg-clip-text text-transparent"
             >
-              INITIATE_COMMUNICATION
+              Let’s build something exceptional
             </m.h2>
           </m.div>
 
@@ -254,13 +246,16 @@ export default function Contact() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
-            className="grid lg:grid-cols-2 gap-12 xl:gap-16"
+            className="grid lg:grid-cols-2 gap-10 xl:gap-14"
           >
             {/* FORM PANEL */}
-            <m.div variants={item} className="p-8 rounded-2xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md">
+            <m.div
+              variants={item}
+              className="p-8 rounded-2xl border border-slate-200 bg-white/85 backdrop-blur-lg shadow-sm"
+            >
               <div className="flex items-center gap-3 mb-6">
-                <Terminal className="w-7 h-7 text-cyan-400" />
-                <h3 className="text-3xl text-white font-bold">SEND_MESSAGE</h3>
+                <Terminal className="w-6 h-6 text-emerald-700" />
+                <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Send a message</h3>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -277,7 +272,7 @@ export default function Contact() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <Field
-                    label="NAME_*"
+                    label="Name *"
                     type="text"
                     name="name"
                     value={form.name}
@@ -285,7 +280,7 @@ export default function Contact() {
                     placeholder="Your full name"
                   />
                   <Field
-                    label="EMAIL_*"
+                    label="Email *"
                     type="email"
                     name="email"
                     value={form.email}
@@ -295,39 +290,41 @@ export default function Contact() {
                 </div>
 
                 <Field
-                  label="SUBJECT_*"
+                  label="Subject *"
                   type="text"
                   name="subject"
                   value={form.subject}
                   onChange={setField("subject")}
-                  placeholder="Project type or description"
+                  placeholder="Project type or short scope"
                 />
 
                 <Area
-                  label="MESSAGE_*"
+                  label="Message *"
                   name="message"
                   value={form.message}
                   onChange={setField("message")}
-                  placeholder="Describe your project requirements..."
+                  placeholder="Describe your project, goals, timing, and any links..."
                 />
 
                 <m.button
                   type="submit"
                   disabled={submitting}
-                  whileHover={!submitting && !reduce ? { y: -2, scale: 1.02 } : {}}
+                  whileHover={!submitting && !reduce ? { y: -2, scale: 1.01 } : {}}
                   whileTap={!submitting && !reduce ? { scale: 0.98 } : {}}
-                  className={`w-full px-8 py-4 rounded-xl font-bold font-mono transition-all
-                    ${submitting ? "bg-gray-600 text-gray-300 cursor-not-allowed" : "bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-400 hover:to-blue-400"}`}
+                  className={`w-full px-8 py-5 rounded-xl font-semibold leading-[1.15] text-white
+                    ${submitting
+                      ? "bg-emerald-600/70 cursor-not-allowed"
+                      : "bg-emerald-600 hover:bg-emerald-700 transition-colors"}`}
                 >
                   {submitting ? (
                     <span className="inline-flex items-center gap-2">
                       <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      PROCESSING…
+                      Processing…
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-2">
                       <Send className="w-5 h-5" />
-                      SEND_MESSAGE
+                      Send message
                     </span>
                   )}
                 </m.button>
@@ -340,13 +337,13 @@ export default function Contact() {
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -6 }}
-                      className={`rounded-xl p-4 border font-mono text-base ${
+                      className={`rounded-xl p-4 border font-mono text-sm ${
                         flowStep === "error"
-                          ? "text-red-300 bg-red-500/10 border-red-500/30"
-                          : "text-cyan-200 bg-cyan-500/10 border-cyan-400/30"
+                          ? "text-red-700 bg-red-50 border-red-200"
+                          : "text-emerald-700 bg-emerald-50 border-emerald-200"
                       }`}
                     >
-                      <FlowStatus step={flowStep} errorMsg={errorMsg} />
+                      <FlowStatus step={flowStep as any} errorMsg={errorMsg} />
                     </m.div>
                   )}
                 </AnimatePresence>
@@ -355,29 +352,29 @@ export default function Contact() {
 
             {/* RIGHT COLUMN */}
             <m.div variants={item} className="space-y-8 min-w-0">
-              {/* System Status — fixed layout */}
-              <div className="p-8 rounded-2xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md">
+              {/* System Status */}
+              <div className="p-8 rounded-2xl border border-slate-200 bg-white/85 backdrop-blur-lg shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
-                  <Signal className="w-7 h-7 text-cyan-400" />
-                  <h3 className="text-3xl text-white font-bold">SYSTEM_STATUS</h3>
+                  <Signal className="w-6 h-6 text-emerald-700" />
+                  <h3 className="text-2xl md:text-3xl font-bold text-slate-900">System status</h3>
                 </div>
 
                 <div className="grid sm:grid-cols-3 gap-4">
                   <MetricCard
                     color="green"
-                    label="AVAILABLE"
+                    label="Available"
                     value="Ready for projects"
                     Icon={CheckCircle}
                   />
                   <MetricCard
                     color="blue"
-                    label="RESPONSE_TIME"
+                    label="Response"
                     value="< 24 hours"
                     Icon={Clock}
                   />
                   <MetricCard
-                    color="purple"
-                    label="TIMEZONE"
+                    color="indigo"
+                    label="Timezone"
                     value="CET (UTC+1)"
                     Icon={Globe}
                   />
@@ -385,44 +382,43 @@ export default function Contact() {
               </div>
 
               {/* Direct Channels */}
-              <div className="p-8 rounded-2xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md">
+              <div className="p-8 rounded-2xl border border-slate-200 bg-white/85 backdrop-blur-lg shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
-                  <MessageSquare className="w-7 h-7 text-cyan-400" />
-                  <h3 className="text-3xl text-white font-bold">DIRECT_CHANNELS</h3>
+                  <MessageSquare className="w-6 h-6 text-emerald-700" />
+                  <h3 className="text-2xl md:text-3xl font-bold text-slate-900">Direct channels</h3>
                 </div>
 
                 <div className="space-y-4">
                   {contactInfo.map((c) => (
-                    <m.a
+                    <a
                       key={c.label}
                       href={c.href}
                       target={c.href ? "_blank" : undefined}
                       rel={c.href ? "noopener noreferrer" : undefined}
-                      whileHover={!reduce ? { y: -2, scale: 1.01 } : {}}
-                      className="block p-4 rounded-xl border border-cyan-400/20 hover:border-cyan-400/50 transition-all"
+                      className="block p-4 rounded-xl border border-slate-200 hover:border-emerald-300 transition-all"
                     >
                       <div className="flex items-center gap-4 min-w-0">
                         <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${c.color} grid place-items-center shrink-0`}>
                           <c.icon className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-cyan-300 text-sm font-mono">{c.label}</p>
-                          <p className="text-white font-medium truncate">{c.value}</p>
+                          <p className="text-slate-500 text-xs font-mono uppercase tracking-wide">{c.label}</p>
+                          <p className="text-slate-900 font-medium truncate">{c.value}</p>
                         </div>
                         {c.href ? (
-                          <ExternalLink className="w-5 h-5 text-cyan-400 shrink-0" />
+                          <ExternalLink className="w-5 h-5 text-slate-500 shrink-0" />
                         ) : c.copyable ? (
                           <button
                             type="button"
                             onClick={onCopyEmail}
-                            className="inline-flex items-center gap-2 text-cyan-300 hover:text-cyan-200 shrink-0"
+                            className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 shrink-0"
                             aria-label="Copy email"
                           >
                             {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                           </button>
                         ) : null}
                       </div>
-                    </m.a>
+                    </a>
                   ))}
                 </div>
               </div>
@@ -431,24 +427,24 @@ export default function Contact() {
 
           {/* bottom strip */}
           <m.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mt-14 p-6 rounded-2xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md text-center"
+            transition={{ duration: 0.45 }}
+            className="mt-14 p-5 rounded-2xl border border-slate-200 bg-white/85 backdrop-blur-lg shadow-sm"
           >
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-6 text-center">
               <div className="flex items-center justify-center gap-3">
-                <Zap className="w-5 h-5 text-cyan-400" />
-                <span className="text-cyan-200 font-mono text-base">STATUS: ONLINE</span>
+                <Zap className="w-5 h-5 text-emerald-700" />
+                <span className="text-slate-800 font-mono">High-performance builds</span>
               </div>
               <div className="flex items-center justify-center gap-3">
-                <Database className="w-5 h-5 text-blue-400" />
-                <span className="text-blue-200 font-mono text-base">RESPONSE: FAST</span>
+                <Database className="w-5 h-5 text-sky-700" />
+                <span className="text-slate-800 font-mono">Robust data flow</span>
               </div>
               <div className="flex items-center justify-center gap-3">
-                <Signal className="w-5 h-5 text-purple-400" />
-                <span className="text-purple-200 font-mono text-base">AVAILABILITY: IMMEDIATE</span>
+                <Signal className="w-5 h-5 text-indigo-700" />
+                <span className="text-slate-800 font-mono">Availability: Immediate</span>
               </div>
             </div>
           </m.div>
@@ -461,7 +457,8 @@ export default function Contact() {
           }
           .field:focus {
             outline: none;
-            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+            border-color: rgb(16 185 129 / 0.7);
           }
         `}</style>
       </section>
@@ -481,10 +478,10 @@ function Field(props: {
 }) {
   return (
     <div>
-      <label className="block text-cyan-300 text-sm font-mono mb-2">{props.label}</label>
+      <label className="block text-slate-700 text-sm mb-2">{props.label}</label>
       <input
         {...props}
-        className="field w-full px-4 py-3 rounded-xl border-2 border-cyan-400/30 bg-slate-800/50 text-gray-100 font-mono placeholder:text-gray-400/70 focus:border-cyan-400"
+        className="field w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400"
       />
     </div>
   );
@@ -499,11 +496,11 @@ function Area(props: {
 }) {
   return (
     <div>
-      <label className="block text-cyan-300 text-sm font-mono mb-2">{props.label}</label>
+      <label className="block text-slate-700 text-sm mb-2">{props.label}</label>
       <textarea
         {...props}
         rows={6}
-        className="field w-full px-4 py-3 rounded-xl border-2 border-cyan-400/30 bg-slate-800/50 text-gray-100 font-mono placeholder:text-gray-400/70 resize-y focus:border-cyan-400"
+        className="field w-full px-4 py-3 rounded-xl border-2 border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 resize-y"
       />
     </div>
   );
@@ -519,7 +516,7 @@ function FlowStatus({
   const map: Record<typeof step, { icon: JSX.Element; text: string; sub?: string }> = {
     queued: { icon: <MessageSquare className="w-4 h-4" />, text: "Queued →", sub: "preparing payload" },
     encrypt: { icon: <Terminal className="w-4 h-4" />, text: "Encrypting →", sub: "AES-256" },
-    uplink: { icon: <Send className="w-4 h-4" />, text: "Uplink →", sub: "satellite relay" },
+    uplink: { icon: <Send className="w-4 h-4" />, text: "Uplink →", sub: "secure channel" },
     done: { icon: <CheckCircle className="w-4 h-4" />, text: "Delivered", sub: "ACK received" },
     error: { icon: <AlertCircle className="w-4 h-4" />, text: "Error", sub: errorMsg || "Try again" },
   };
@@ -528,7 +525,7 @@ function FlowStatus({
     <div className="flex items-center gap-3">
       {d.icon}
       <span className="font-semibold">{d.text}</span>
-      <span className="text-cyan-300/80">· {d.sub}</span>
+      <span className="text-slate-600">· {d.sub}</span>
     </div>
   );
 }
@@ -539,24 +536,27 @@ function MetricCard({
   value,
   Icon,
 }: {
-  color: "green" | "blue" | "purple";
+  color: "green" | "blue" | "indigo";
   label: string;
   value: string;
   Icon: any;
 }) {
   const colorMap = {
-    green: { bg: "bg-green-500/10", br: "border-green-500/30", tx: "text-green-300" },
-    blue: { bg: "bg-blue-500/10", br: "border-blue-500/30", tx: "text-blue-300" },
-    purple: { bg: "bg-purple-500/10", br: "border-purple-500/30", tx: "text-purple-300" },
+    green: { ring: "ring-emerald-100", dot: "bg-emerald-500", icon: "text-emerald-700" },
+    blue: { ring: "ring-sky-100", dot: "bg-sky-500", icon: "text-sky-700" },
+    indigo: { ring: "ring-indigo-100", dot: "bg-indigo-500", icon: "text-indigo-700" },
   }[color];
 
   return (
-    <div className={`p-4 rounded-xl border ${colorMap.bg} ${colorMap.br} min-w-0`}>
+    <div className={`p-4 rounded-xl border border-slate-200 bg-white ring-1 ${colorMap.ring}`}>
       <div className="flex items-center gap-3 mb-1">
-        <Icon className={`w-5 h-5 ${colorMap.tx} shrink-0`} />
-        <span className={`font-mono text-xs ${colorMap.tx} uppercase tracking-wider`}>{label}</span>
+        <Icon className={`w-5 h-5 ${colorMap.icon}`} />
+        <span className="font-mono text-xs text-slate-600 uppercase tracking-wider">{label}</span>
       </div>
-      <div className="text-white font-semibold truncate">{value}</div>
+      <div className="flex items-center gap-2">
+        <span className={`inline-block w-2 h-2 rounded-full ${colorMap.dot}`} />
+        <div className="text-slate-900 font-semibold truncate">{value}</div>
+      </div>
     </div>
   );
 }

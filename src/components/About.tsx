@@ -8,43 +8,74 @@ import {
   useScroll,
   useTransform,
   useReducedMotion,
+  type Variants,
 } from "framer-motion";
-import type { Variants } from "framer-motion";
 import {
-  Globe,
-  Database,
   Code2,
-  Award,
-  BookOpen,
-  TrendingUp,
-  Lightbulb,
-  Rocket,
-  Target,
+  Server,
+  Database,
   Layers,
   Navigation,
-  Signal,
   Webhook,
-  Server,
+  TrendingUp,
+  Award,
+  BookOpen,
+  Lightbulb,
+  Target,
+  Globe,
+  Rocket,
 } from "lucide-react";
 
-/* Variants */
-const container: Variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.12 } },
-};
-const item: Variants = {
-  hidden: { y: 22, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.45, ease: "easeOut" } },
+/* ───────────────────────── Brand tokens (match Hero: Pearl Mint Shine) ───────────────────────── */
+const BRAND = {
+  pageBg: "from-zinc-50 via-white to-emerald-50",
+  accent: "from-emerald-600 to-teal-600",
+  titleGrad: "from-emerald-800 via-teal-800 to-slate-800",
+  chipBg: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  cardBorder: "border-slate-200",
 };
 
-/* Content */
-const SKILLS = [
-  { name: "Frontend Development", icon: Code2, textColor: "text-red-400", desc: "Angular, React, TypeScript, modern UI frameworks" },
-  { name: "Backend Development", icon: Server, textColor: "text-yellow-400", desc: "Node.js, Python, C++, REST APIs, microservices" },
-  { name: "Data Engineering", icon: Database, textColor: "text-purple-400", desc: "ETL pipelines, data processing, analytics" },
-  { name: "DevOps & Cloud", icon: Navigation, textColor: "text-indigo-400", desc: "Kubernetes, Docker, GCP, CI/CD pipelines" },
-  { name: "System Architecture", icon: Layers, textColor: "text-cyan-400", desc: "Scalable software design, enterprise solutions" },
-  { name: "Full Stack Solutions", icon: Webhook, textColor: "text-green-400", desc: "End-to-end application development" },
+/* ───────────────────────── Motion variants ───────────────────────── */
+const container: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.08 } },
+};
+const item: Variants = {
+  hidden: { y: 14, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { duration: 0.35, ease: "easeOut" } },
+};
+
+/* ───────────────────────── Coder-centric content ───────────────────────── */
+const PRINCIPLES = [
+  {
+    title: "Clarity First",
+    desc: "Readable code, cohesive modules, strong boundaries. Future-you (or the team) should thank you.",
+    icon: BookOpen,
+  },
+  {
+    title: "Reliability > Cleverness",
+    desc: "Fewer moving parts, guarded edges, graceful failure. Observability baked in.",
+    icon: Target,
+  },
+  {
+    title: "Performance as a Feature",
+    desc: "Data-informed profiling, lean render paths, cache where it matters, async the rest.",
+    icon: Rocket,
+  },
+  {
+    title: "DX Matters",
+    desc: "Tight feedback loops, scripts over rituals, reproducible environments, CI/CD from day one.",
+    icon: Lightbulb,
+  },
+] as const;
+
+const TOOLBELT = [
+  { label: "Languages", items: ["TypeScript", "Python", "C++"] },
+  { label: "Frontend", items: ["Angular", "React", "Vite", "Tailwind"] },
+  { label: "Backend & Services", items: ["Node.js", "REST", "gRPC", "Auth/JWT"] },
+  { label: "Data & Cloud", items: ["ETL", "Airflow", "Superset", "GCP"] },
+  { label: "Systems", items: ["Electron", "ROS", "Ubuntu"] },
+  { label: "Ops", items: ["Docker", "Kubernetes", "CI/CD"] },
 ] as const;
 
 const EXPERIENCES = [
@@ -54,7 +85,12 @@ const EXPERIENCES = [
     company: "NavVis GmbH",
     location: "Munich, Germany",
     icon: Globe,
-    color: "from-cyan-500 to-blue-500",
+    color: "from-emerald-500 to-teal-500",
+    bullets: [
+      "Full-stack work across Angular, TypeScript, Python, C++",
+      "Enterprise desktop tooling (Electron) & ROS topics",
+      "Reliability/perf-focused refactors, Ubuntu migration",
+    ],
     tech: ["Angular", "TypeScript", "Python", "C++", "Electron", "ROS", "Ubuntu"],
   },
   {
@@ -63,7 +99,12 @@ const EXPERIENCES = [
     company: "Careem",
     location: "Karachi, Pakistan",
     icon: Database,
-    color: "from-green-500 to-emerald-500",
+    color: "from-teal-500 to-cyan-500",
+    bullets: [
+      "Navigator data discovery: micro-services on Kubernetes",
+      "ETL in Airflow, monitoring/metrics on Argus",
+      "Superset improvements & data modeling for insights",
+    ],
     tech: ["Python", "Kubernetes", "Airflow", "Jenkins", "Superset"],
   },
   {
@@ -72,168 +113,194 @@ const EXPERIENCES = [
     company: "Brandverse",
     location: "Karachi, Pakistan",
     icon: Rocket,
-    color: "from-purple-500 to-pink-500",
+    color: "from-cyan-500 to-sky-500",
+    bullets: [
+      "E-commerce (Chikoo) features & automations",
+      "WhatsApp ordering, vouchers, media pipeline",
+      "React/TypeScript + Node + Mongo + K8s on GCP",
+    ],
     tech: ["React", "TypeScript", "Node.js", "MongoDB", "Kubernetes", "GCP"],
   },
 ] as const;
 
-/* Stars (match Hero) */
-const STARS = Array.from({ length: 24 }).map((_, i) => ({
-  x: (i * 137.5) % 100,
-  y: (i * 41.8) % 100,
-  delay: (i % 8) * 0.2,
-}));
-
-const About = () => {
+export default function About() {
   const reduce = useReducedMotion();
 
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start 75%", "end 25%"] });
+  /* Scroll-linked timeline spine */
+  const ref = useRef<HTMLElement | null>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 30%"] });
   const spineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
     <LazyMotion features={domAnimation}>
       <section
         id="about"
-        ref={sectionRef}
-        className="relative min-h-screen py-24 overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-[15px] md:text-[16px]"
+        ref={ref}
+        className={`relative min-h-screen py-28 overflow-hidden bg-gradient-to-br ${BRAND.pageBg} text-[16px] md:text-[17px]`}
       >
-        {/* grid + stars */}
+        {/* Subtle background texture */}
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-[0.045] pointer-events-none"
           style={{
             backgroundImage: `
-              linear-gradient(rgba(34, 211, 238, 0.08) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(34, 211, 238, 0.08) 1px, transparent 1px)
+              linear-gradient(rgba(5,150,105,.24) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(5,150,105,.24) 1px, transparent 1px)
             `,
-            backgroundSize: "40px 40px",
+            backgroundSize: "60px 60px",
           }}
         />
-        <div className="absolute inset-0 pointer-events-none">
-          {STARS.map((s, i) => (
-            <m.span
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0.15, 0.5, 0.15] }}
-              transition={{ duration: 3.2, delay: s.delay, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute w-[2px] h-[2px] bg-cyan-300/70 rounded-full"
-              style={{ left: `${s.x}%`, top: `${s.y}%`, transform: "translateZ(0)" }}
-            />
-          ))}
-        </div>
 
-        {/* content */}
-        <div className="relative z-10 mx-auto px-6 max-w-7xl xl:max-w-[90rem]">
-          {/* boot line */}
-          <m.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mb-12">
-            <p className="font-mono text-cyan-300/90 text-xs tracking-widest mb-3">
-              &gt; INITIALIZING: ABOUT_ME_MODULE …
-            </p>
-            <div className="h-[3px] w-56 bg-gradient-to-r from-cyan-400/0 via-cyan-400/70 to-cyan-400/0 rounded-full" />
+        <div className="relative z-10 mx-auto px-6 max-w-[100rem]">
+          {/* Header */}
+          <m.div
+            initial={{ opacity: 0, y: 6 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-14"
+          >
+            <h2
+              className={`text-4xl md:text-5xl font-extrabold bg-gradient-to-r ${BRAND.titleGrad} bg-clip-text text-transparent tracking-tight`}
+            >
+              About — the coder’s cut
+            </h2>
+            <div className={`mt-4 h-[3px] w-56 bg-gradient-to-r ${BRAND.accent} rounded-full opacity-80`} />
           </m.div>
 
-          {/* grid */}
+          {/* Main grid */}
           <m.div
             variants={container}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            className="grid lg:grid-cols-2 gap-12 xl:gap-16 mb-20"
+            viewport={{ once: true, amount: 0.25 }}
+            className="grid xl:grid-cols-[1.05fr_.95fr] gap-14 xl:gap-20 mb-20"
           >
-            {/* left */}
+            {/* LEFT: Principles + Toolbelt */}
             <div className="space-y-12">
-              {/* mission */}
-              <m.div variants={item} className="relative p-10 rounded-2xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md overflow-hidden">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent" />
-                <h3 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent mb-4 tracking-wide">
-                  MISSION_BRIEF
-                </h3>
-                <p className="text-gray-200 text-[17px] md:text-lg leading-8">
-                  From <span className="text-cyan-400">Pakistan’s tech scene</span> to <span className="text-blue-400">Germany’s innovation hub</span>, I operate across
-                  <span className="text-purple-400"> frontend</span>, <span className="text-purple-400">backend</span>, and <span className="text-purple-400">data</span>,
-                  shipping reliable systems and measurable outcomes. Currently at <span className="text-cyan-300">NavVis</span>, building enterprise-grade software and platform tooling.
-                </p>
-                {!reduce && (
-                  <m.div
-                    className="absolute inset-0"
-                    animate={{ x: ["-30%", "130%"] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
-                    style={{ background: "linear-gradient(90deg, transparent, rgba(34,211,238,0.08), transparent)", mixBlendMode: "screen" }}
-                  />
-                )}
+              {/* Principles */}
+              <m.div
+                variants={item}
+                className={`p-10 rounded-2xl border ${BRAND.cardBorder} bg-white/85 backdrop-blur-xl shadow-sm`}
+              >
+                <div className="flex items-center gap-2 mb-6">
+                  <Layers className="w-5 h-5 text-teal-700" />
+                  <h3 className="text-2xl md:text-3xl font-semibold text-slate-900">
+                    How I build software
+                  </h3>
+                </div>
+                <ul className="grid sm:grid-cols-2 gap-6">
+                  {PRINCIPLES.map((p) => (
+                    <li key={p.title} className="flex items-start gap-3">
+                      <p.icon className="w-5 h-5 mt-1 text-emerald-700 shrink-0" />
+                      <div>
+                        <div className="text-slate-900 font-medium">{p.title}</div>
+                        <div className="text-slate-600 leading-7">{p.desc}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               </m.div>
 
-              {/* skills */}
-              <m.div variants={item} className="space-y-6">
-                <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent">
-                  CORE_COMPETENCIES
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {SKILLS.map((s, i) => (
-                    <m.div key={s.name} initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: i * 0.06 }} viewport={{ once: true }}>
-                      <div className="relative p-5 rounded-xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md hover:border-cyan-400/40 transition-colors overflow-hidden">
-                        <div className="flex items-center gap-3 mb-2">
-                          <s.icon className={`w-7 h-7 ${s.textColor}`} />
-                          <span className="text-white font-semibold text-lg">{s.name}</span>
-                        </div>
-                        <p className="text-cyan-100/95 text-[15px] leading-7">{s.desc}</p>
-                        {!reduce && (
-                          <m.div
-                            className="absolute top-0 bottom-0 w-1/3"
-                            animate={{ x: ["-120%", "120%"] }}
-                            transition={{ duration: 7, repeat: Infinity }}
-                            style={{ background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.06), transparent)", mixBlendMode: "screen" }}
-                          />
-                        )}
+              {/* Toolbelt */}
+              <m.div
+                variants={item}
+                className={`p-10 rounded-2xl border ${BRAND.cardBorder} bg-white/85 backdrop-blur-xl shadow-sm`}
+              >
+                <div className="flex items-center gap-2 mb-6">
+                  <Code2 className="w-5 h-5 text-teal-700" />
+                  <h3 className="text-2xl md:text-3xl font-semibold text-slate-900">Toolbelt</h3>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-8">
+                  {TOOLBELT.map((group) => (
+                    <div key={group.label}>
+                      <div className="text-sm font-semibold text-slate-700 mb-2">{group.label}</div>
+                      <div className="flex flex-wrap gap-2">
+                        {group.items.map((t) => (
+                          <span
+                            key={t}
+                            className={`px-2.5 py-1.5 rounded-lg text-sm ${BRAND.chipBg}`}
+                          >
+                            {t}
+                          </span>
+                        ))}
                       </div>
-                    </m.div>
+                    </div>
                   ))}
                 </div>
               </m.div>
             </div>
 
-            {/* right: timeline */}
+            {/* RIGHT: Career timeline */}
             <div className="space-y-8">
-              <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent flex items-center gap-2">
-                <TrendingUp className="w-6 h-6 text-cyan-400" /> CAREER_TRAJECTORY
-              </h3>
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-teal-700" />
+                <h3 className="text-2xl md:text-3xl font-semibold text-slate-900">
+                  Career trajectory
+                </h3>
+              </div>
 
               <div className="relative">
-                <div className="absolute left-6 top-0 bottom-0 w-[2px] bg-cyan-400/20" />
+                {/* static spine */}
+                <div className="absolute left-6 top-0 bottom-0 w-[3px] bg-slate-200 rounded-full" />
+                {/* progress fill */}
                 <m.div
-                  className="absolute left-6 top-0 w-[2px] origin-top"
-                  style={{ scaleY: reduce ? 1 : spineScaleY, background: "linear-gradient(180deg,#22d3ee,#3b82f6)", boxShadow: "0 0 10px rgba(34,211,238,.35)" }}
+                  className="absolute left-6 top-0 w-[3px] origin-top rounded-full"
+                  style={{
+                    scaleY: reduce ? 1 : spineScaleY,
+                    background: "linear-gradient(180deg,#10b981,#0ea5e9)",
+                    boxShadow: "0 0 12px rgba(14,165,233,.22)",
+                  }}
                 />
+
                 {EXPERIENCES.map((exp) => (
-                  <m.div key={exp.company} variants={item} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.4 }} className="relative mb-10 last:mb-0">
-                    <div className="absolute left-4 top-2">
-                      <span className="relative block w-4 h-4 rounded-full border-4 border-slate-950" style={{ background: "linear-gradient(90deg,#22d3ee,#3b82f6)" }}>
-                        {!reduce && <span className="absolute inset-0 rounded-full animate-[ping_5s_ease-out_infinite] bg-cyan-400/30" />}
-                      </span>
+                  <m.div
+                    key={exp.company}
+                    variants={item}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.35 }}
+                    className="relative mb-10 last:mb-0"
+                  >
+                    {/* node */}
+                    <div className="absolute left-[1rem] top-2">
+                      <span
+                        className="relative block w-4 h-4 rounded-full border-4 border-white shadow-sm"
+                        style={{ background: "linear-gradient(90deg,#10b981,#0ea5e9)" }}
+                      />
                     </div>
-                    <m.div className="ml-12 relative p-7 rounded-xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md transition-colors overflow-hidden" whileInView={{ borderColor: "#22d3ee55" }}>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xl font-bold text-cyan-300 font-mono">{exp.year}</span>
-                        <exp.icon className={`w-7 h-7 bg-gradient-to-r ${exp.color} bg-clip-text text-transparent`} />
+
+                    {/* card */}
+                    <m.div
+                      className={`ml-12 p-7 rounded-xl border ${BRAND.cardBorder} bg-white/85 backdrop-blur-xl shadow-sm`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-slate-700 font-mono text-sm">{exp.year}</span>
+                        <exp.icon
+                          className={`w-6 h-6 bg-gradient-to-r ${exp.color} bg-clip-text text-transparent`}
+                        />
                       </div>
-                      <h4 className="text-xl font-bold text-white">{exp.title}</h4>
-                      <p className="text-cyan-300 font-mono">{exp.company}</p>
-                      <p className="text-blue-200 text-sm md:text-base mb-4">{exp.location}</p>
-                      <div className="flex flex-wrap gap-2.5">
+                      <div className="text-slate-900 font-semibold text-xl">{exp.title}</div>
+                      <div className="text-teal-800 font-mono">{exp.company}</div>
+                      <div className="text-slate-600 text-sm mb-4">{exp.location}</div>
+
+                      <ul className="space-y-1.5 text-slate-700">
+                        {exp.bullets.map((b) => (
+                          <li key={b} className="flex gap-2">
+                            <span className="mt-[7px] h-[6px] w-[6px] rounded-full bg-emerald-400/70" />
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div className="mt-4 flex flex-wrap gap-2">
                         {exp.tech.map((t) => (
-                          <span key={t} className="px-2.5 py-1.5 bg-cyan-500/10 border border-cyan-400/25 rounded text-sm text-cyan-200 font-mono">
+                          <span
+                            key={t}
+                            className="px-2 py-1 rounded-lg text-xs bg-emerald-50 text-emerald-800 border border-emerald-200"
+                          >
                             {t}
                           </span>
                         ))}
                       </div>
-                      {!reduce && (
-                        <m.div
-                          className="absolute inset-0"
-                          animate={{ x: ["-25%", "125%"] }}
-                          transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
-                          style={{ background: "linear-gradient(90deg, transparent, rgba(59,130,246,0.08), transparent)", mixBlendMode: "screen" }}
-                        />
-                      )}
                     </m.div>
                   </m.div>
                 ))}
@@ -241,64 +308,61 @@ const About = () => {
             </div>
           </m.div>
 
-          {/* specs */}
-          <m.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }}>
-            <h3 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
-              DEVELOPER_SPECS
-            </h3>
+          {/* Specs snapshot */}
+          <m.div
+            variants={container}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.25 }}
+          >
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { icon: Award, title: "EXPERIENCE_LEVEL", value: "SENIOR_DEV", desc: "4+ years across multiple domains" },
-                { icon: BookOpen, title: "SPECIALIZATION", value: "FULL_STACK", desc: "Frontend ↔ Backend ↔ Data" },
-                { icon: Lightbulb, title: "INNOVATION", value: "HIGH", desc: "Automation, DX tooling, CI/CD" },
-                { icon: Target, title: "ADAPTABILITY", value: "GLOBAL", desc: "Pakistan → Germany" },
-              ].map((spec) => (
-                <m.div key={spec.title} variants={item} initial="hidden" whileInView="visible" viewport={{ once: true }} className="relative p-6 rounded-xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md">
-                  <div className="relative w-18 h-18 mx-auto mb-4">
-                    {!reduce && <div className="absolute inset-0 rounded-full bg-cyan-400/20 blur-xl animate-pulse" />}
-                    <div className="relative w-16 h-16 mx-auto rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 flex items-center justify-center">
-                      <spec.icon className="w-8 h-8 text-white" />
-                    </div>
+                { icon: Award, title: "Experience", value: "6+ years", desc: "Product & platform" },
+                { icon: Layers, title: "Specialisation", value: "Full-Stack", desc: "Frontend ↔ Backend ↔ Data" },
+                { icon: Lightbulb, title: "Focus", value: "DX & Perf", desc: "Tooling, CI/CD, profiling" },
+                { icon: Webhook, title: "Approach", value: "API-first", desc: "Contracts before screens" },
+              ].map((s) => (
+                <m.div
+                  key={s.title}
+                  variants={item}
+                  className={`p-7 rounded-xl border ${BRAND.cardBorder} bg-white/85 backdrop-blur-xl shadow-sm text-center`}
+                >
+                  <div className="mx-auto mb-3 w-12 h-12 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 grid place-items-center">
+                    <s.icon className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-cyan-300 font-mono text-xs">{spec.title}</div>
-                  <div className="text-white font-black text-2xl">{spec.value}</div>
-                  <div className="text-cyan-100/95 text-[15px]">{spec.desc}</div>
+                  <div className="text-slate-600 text-xs tracking-wide">{s.title}</div>
+                  <div className="text-slate-900 font-black text-2xl">{s.value}</div>
+                  <div className="text-slate-700">{s.desc}</div>
                 </m.div>
               ))}
             </div>
           </m.div>
 
-          {/* footer strip */}
+          {/* Footer strip */}
           <m.div
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="mt-14 p-6 rounded-xl border border-cyan-400/20 bg-white/[0.03] backdrop-blur-md"
+            transition={{ duration: 0.35 }}
+            className={`mt-16 p-7 rounded-xl border ${BRAND.cardBorder} bg-white/85 backdrop-blur-xl shadow-sm`}
           >
             <div className="grid md:grid-cols-3 gap-6 text-center">
               <div className="flex items-center justify-center gap-3">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
-                <span className="text-cyan-200 font-mono text-base">STATUS: AVAILABLE</span>
+                <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full" />
+                <span className="text-slate-800 font-mono text-base">STATUS: AVAILABLE</span>
               </div>
               <div className="flex items-center justify-center gap-3">
-                <Signal className="w-5 h-5 text-blue-400" />
-                <span className="text-blue-200 font-mono text-base">RESPONSE: FAST</span>
+                <Navigation className="w-5 h-5 text-teal-700" />
+                <span className="text-slate-800 font-mono text-base">RESPONSE: &lt; 24H</span>
               </div>
               <div className="flex items-center justify-center gap-3">
-                <Database className="w-5 h-5 text-purple-400" />
-                <span className="text-purple-200 font-mono text-base">QUALITY: PREMIUM</span>
+                <Server className="w-5 h-5 text-sky-700" />
+                <span className="text-slate-800 font-mono text-base">DELIVERY: RELIABLE</span>
               </div>
             </div>
           </m.div>
         </div>
-
-        <style jsx>{`
-          @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
-        `}</style>
       </section>
     </LazyMotion>
   );
-};
-
-export default About;
+}

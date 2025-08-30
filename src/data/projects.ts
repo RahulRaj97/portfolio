@@ -1,73 +1,81 @@
 // src/data/projects.ts
-
-export type ProjectLink = {
-  demo?: string; // e.g. https://example.com
-  repo?: string; // e.g. https://github.com/you/project
-  caseStudy?: string; // optional external write-up
-};
-
 export type ProjectMedia =
   | { type: "image"; src: string; alt?: string }
-  | { type: "video"; src: string; poster?: string } // local mp4/webm in /public
-  | { type: "iframe"; src: string; title?: string }; // YouTube/Vimeo/etc
+  | {
+      type: "video";
+      src: string;
+      provider?: "youtube" | "vimeo" | "file";
+      poster?: string;
+    };
 
 export type Project = {
   id: string;
   title: string;
-  summary: string; // short card blurb
-  description?: string; // longer text shown in modal
-  role?: string; // your role (e.g., "Lead Engineer")
-  period?: string; // "2023 — 2024"
-  tech: string[]; // chips
-  tags?: string[]; // used for filters (e.g. ["Web App","Data"])
-  links?: ProjectLink;
-  media: ProjectMedia[]; // images/videos/iframe slides
-  highlights?: string[]; // bullet points (metrics/outcomes)
-  featured?: boolean;
+  description: string;
+  longDescription?: string;
+  tags: string[]; // e.g. ['B2B', 'Internal Tool']
+  tech: string[]; // e.g. ['React', 'TypeScript', 'GCP']
+  links?: { label: string; href: string }[];
+  cover?: string; // image path; optional (we’ll fallback gracefully)
+  media: ProjectMedia[]; // gallery: images + videos
+  spotlight?: boolean; // optional highlight
 };
 
-// Fill these with your real projects.
-// You can use local assets from /public, e.g. /public/projects/xyz/shot1.jpg
 export const PROJECTS: Project[] = [
   {
-    id: "sample-webapp",
-    title: "Sample Web App",
-    summary: "Modern web app focused on speed, DX, and accessibility.",
+    id: "device-manager",
+    title: "Device Manager Portal",
     description:
-      "A production-grade web application with SSR-ready architecture, strong typing, and CI/CD. Optimized bundle, solid a11y, and robust E2E tests.",
-    role: "Full-Stack Engineer",
-    period: "2024",
-    tech: ["TypeScript", "React", "Node.js", "Kubernetes"],
-    tags: ["Web App", "Platform"],
-    links: {
-      demo: "https://example.com",
-      repo: "https://github.com/you/sample-webapp",
-    },
+      "Admin portal for managing mobile mapping devices with an operator-first UX.",
+    longDescription:
+      "Focused on reliability and ergonomic workflows. Integrated diagnostics, fleet views, and fast search. Built to be resilient under spotty connections.",
+    tags: ["B2B", "Ops"],
+    tech: ["React", "TypeScript", "Vite", "Python"],
+    links: [
+      { label: "Case Study", href: "#" },
+      { label: "Live (Auth)", href: "#" },
+    ],
+    cover: "/profile_picture.jpeg", // replace with /projects/device-manager/cover.jpg
     media: [
-      { type: "image", src: "/projects/sample/hero.jpg", alt: "Landing page" },
-      {
-        type: "image",
-        src: "/projects/sample/dashboard.jpg",
-        alt: "Dashboard",
-      },
+      { type: "image", src: "/profile_picture.jpeg", alt: "Device Manager UI" },
+      // Example video entry (replace with your real YouTube ID or mp4 file)
       {
         type: "video",
-        src: "/projects/sample/teaser.mp4",
-        poster: "/projects/sample/poster.jpg",
-      },
-      {
-        type: "iframe",
+        provider: "youtube",
         src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-        title: "Demo Video",
       },
     ],
-    highlights: [
-      "LCP under 1.5s on 4G",
-      "A11y score 100 (Lighthouse)",
-      "Deployed on GKE with GitOps",
-    ],
-    featured: true,
+    spotlight: true,
   },
-
-  // Add more objects here…
+  {
+    id: "navigator",
+    title: "Navigator: Data Discovery",
+    description:
+      "Service-level data views with freshness tracking and microservice drilldowns.",
+    tags: ["Data", "Internal Tool"],
+    tech: ["Kubernetes", "Airflow", "Superset"],
+    links: [{ label: "Overview", href: "#" }],
+    media: [
+      { type: "image", src: "/vite.svg", alt: "Mock" },
+      { type: "image", src: "/vite.svg", alt: "Mock 2" },
+    ],
+  },
+  {
+    id: "chikoo",
+    title: "Chikoo Commerce",
+    description:
+      "WhatsApp ordering, vouchers, and conversion-focused storefronts.",
+    tags: ["E-commerce"],
+    tech: ["React", "Node.js", "MongoDB", "GCP"],
+    links: [{ label: "Website", href: "#" }],
+    media: [{ type: "image", src: "/vite.svg", alt: "Chikoo" }],
+  },
 ];
+
+// Helper: derive all tag filters from data
+export const ALL_TAGS = Array.from(
+  new Set(PROJECTS.flatMap((p) => p.tags))
+).sort();
+export const ALL_TECH = Array.from(
+  new Set(PROJECTS.flatMap((p) => p.tech))
+).sort();

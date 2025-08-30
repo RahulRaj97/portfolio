@@ -1,737 +1,510 @@
 import {
-  Box,
-  Chip,
-  Container,
-  Paper,
-  Stack,
-  Typography,
-  Button,
-  TextField,
-  InputAdornment,
-  Avatar,
-  Divider,
-  Dialog,
-  IconButton,
-  Tooltip,
+  Box, Chip, Container, Dialog, Divider, IconButton, InputAdornment, Paper,
+  Stack, TextField, Typography, Button
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Github,
-  ExternalLink,
-  Link2,
-  ImageIcon as ImageIc,
-  PlayCircle,
-  X,
-  Star,
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  Search,
-  Layers,
-  Info,
-  Calendar,
-  Briefcase,
+  X, ExternalLink, Play, Image as ImageIcon, Tag, Search, ChevronLeft, ChevronRight, Sparkles
 } from 'lucide-react';
-import { useMemo, useState, useCallback, useEffect, useRef } from 'react';
-import type { Project } from '../../data/projects';
-import { PROJECTS } from '../../data/projects';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { PROJECTS, ALL_TAGS, ALL_TECH, Project, ProjectMedia } from '../../data/projects';
 
-/* ------------------------------- helpers ------------------------------- */
-
-const DEFAULT_CATEGORIES = ['All', 'Web App', 'Data', 'Mobile', 'Open Source', 'Platform'] as const;
-type Category = (typeof DEFAULT_CATEGORIES)[number];
-
-function categoriesFromProjects(projects: Project[]): Category[] {
-  const set = new Set<Category>(['All', ...DEFAULT_CATEGORIES]);
-  projects.forEach(p => (p.tags || []).forEach(t => set.add(t as Category)));
-  return Array.from(set);
-}
-
-function matchesCategory(p: Project, cat: Category) {
-  if (cat === 'All') return true;
-  return (p.tags || []).some(t => t.toLowerCase() === cat.toLowerCase());
-}
-
-function matchesSearch(p: Project, q: string) {
-  if (!q) return true;
-  const hay = [
-    p.title,
-    p.summary,
-    p.description || '',
-    (p.tech || []).join(' '),
-    (p.tags || []).join(' '),
-  ]
-    .join(' ')
-    .toLowerCase();
-  return hay.includes(q.toLowerCase());
-}
-
-/* ------------------------------- component ----------------------------- */
+/**
+ * Feature highlights:
+ * - Filter by tag / tech + text search
+ * - Responsive grid
+ * - Rich modal with gallery (images + YouTube/Vimeo/mp4)
+ * - Keyboard nav: ← → next/prev, Esc close
+ * - Graceful image fallback
+ */
 
 export default function Projects() {
-  const [category, setCategory] = useState<Category>('All');
+  // ------- filters -------
   const [query, setQuery] = useState('');
-  const [active, setActive] = useState<Project | null>(null);
-  const [slide, setSlide] = useState(0);
+  const [tag, setTag] = useState<string | 'All'>('All');
+  const [tech, setTech] = useState<string | 'All'>('All');
 
-  const categories = useMemo(() => categoriesFromProjects(PROJECTS), []);
-  const filtered = useMemo(
-    () =>
-      PROJECTS.filter(p => matchesCategory(p, category) && matchesSearch(p, query)),
-    [category, query]
-  );
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    return PROJECTS.filter((p) => {
+      const matchQ =
+        !q ||
+        p.title.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.tech.join(' ').toLowerCase().includes(q) ||
+        p.tags.join(' ').toLowerCase().includes(q);
+      const matchTag = tag === 'All' || p.tags.includes(tag);
+      const matchTech = tech === 'All' || p.tech.includes(tech);
+      return matchQ && matchTag && matchTech;
+    });
+  }, [query, tag, tech]);
 
-  // reset slide when active changes
-  useEffect(() => setSlide(0), [active]);
+  // spotlight first
+  const ordered = useMemo(() => {
+    const s = filtered.filter(p => p.spotlight);
+    const rest = filtered.filter(p => !p.spotlight);
+    return [...s, ...rest];
+  }, [filtered]);
+
+  // ------- modal state -------
+  const [openId, setOpenId] = useState<string | null>(null);
+  const activeIndex = useMemo(() => ordered.findIndex(p => p.id === openId), [ordered, openId]);
+  const active = activeIndex >= 0 ? ordered[activeIndex] : null;
+  const [mediaIndex, setMediaIndex] = useState(0);
+
+  useEffect(() => { setMediaIndex(0); }, [openId]);
+
+  // keyboard navigation
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!active) return;
+      if (e.key === 'Escape') setOpenId(null);
+      if (e.key === 'ArrowRight') nextProject();
+      if (e.key === 'ArrowLeft') prevProject();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [activeIndex, active]);
+
+  const nextProject = () => {
+    if (!ordered.length) return;
+    const next = (activeIndex + 1) % ordered.length;
+    setOpenId(ordered[next].id);
+  };
+  const prevProject = () => {
+    if (!ordered.length) return;
+    const prev = (activeIndex - 1 + ordered.length) % ordered.length;
+    setOpenId(ordered[prev].id);
+  };
 
   return (
-    <Box id="projects" sx={{ py: { xs: 8, md: 10 }, position: 'relative' }}>
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <Box sx={{ textAlign: 'center', mb: 5 }}>
-            <Typography
-              variant="h2"
-              sx={{
-                mb: 2,
-                fontWeight: 800,
-                fontSize: { xs: '2.2rem', md: '2.8rem' },
-                lineHeight: 1.1,
-              }}
-            >
-              Projects &{' '}
-              <span
-                style={{
-                  background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600))',
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  color: 'transparent',
-                }}
-              >
-                Case Studies
-              </span>
+    <Box id="projects" sx={{ py: { xs: 8, md: 12 }, position: 'relative' }}>
+      <Container maxWidth="lg">
+        {/* Heading */}
+        <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, mb: 2, p: 1.5, borderRadius: 999, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.08)' }}>
+              <Sparkles size={16} color="var(--color-primary-600)" />
+              <Typography variant="caption" sx={{ fontWeight: 700, color: 'var(--color-primary-700)' }}>
+                Real products. Real results.
+              </Typography>
+            </Box>
+            <Typography variant="h2" sx={{ fontWeight: 800 }}>
+              Selected Projects
             </Typography>
-            <Typography variant="h6" sx={{ color: 'text.secondary', maxWidth: 780, mx: 'auto' }}>
-              Real products, measurable impact. Images, videos, links, and the stack that shipped them.
+            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 720, mx: 'auto', mt: 1.5 }}>
+              A mix of shipped work and deep, technical builds. Images & videos are placeholders—drop yours in <code>public/projects</code>.
             </Typography>
           </Box>
         </motion.div>
 
-        {/* Filters / search */}
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={2}
-          alignItems={{ xs: 'stretch', md: 'center' }}
-          justifyContent="space-between"
-          sx={{ mb: 3 }}
-        >
-          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
-            <Filter size={16} />
-            {categories.map(c => (
-              <Chip
-                key={c}
-                label={c}
-                onClick={() => setCategory(c)}
-                color={category === c ? 'primary' : undefined}
-                variant={category === c ? 'filled' : 'outlined'}
-                sx={{ borderRadius: 999, height: 30, fontWeight: 600 }}
+        {/* Filters */}
+        <Paper elevation={0} sx={{ p: 2, borderRadius: 3, mb: 4, background: 'rgba(255,255,255,0.75)', border: t => `1px solid ${t.palette.divider}` }}>
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="center" justifyContent="space-between">
+            <TextField
+              fullWidth
+              placeholder="Search projects (title, tags, tech)…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search size={18} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+              <FilterChips
+                label="Tag"
+                value={tag}
+                onChange={setTag}
+                options={['All', ...ALL_TAGS]}
+                icon={<Tag size={14} />}
               />
-            ))}
+              <FilterChips
+                label="Tech"
+                value={tech}
+                onChange={setTech}
+                options={['All', ...ALL_TECH]}
+                icon={<ImageIcon size={14} />} // just a glyph; change if you want
+              />
+            </Stack>
           </Stack>
-
-          <TextField
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search projects..."
-            size="small"
-            sx={{ width: { xs: '100%', md: 320 } }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search size={16} />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Stack>
+        </Paper>
 
         {/* Grid */}
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: '1fr 1fr 1fr' },
-            gap: 16,
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+            gap: 3,
           }}
         >
-          {filtered.map((p, idx) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: idx * 0.05 }}
-            >
-              <ProjectCard project={p} onOpen={() => setActive(p)} />
-            </motion.div>
-          ))}
+          <AnimatePresence>
+            {ordered.map((p, i) => (
+              <motion.div
+                key={p.id}
+                layout
+                initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: i * 0.05 }}
+              >
+                <ProjectCard project={p} onOpen={() => setOpenId(p.id)} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </Box>
 
-        {/* Lightbox / details */}
-        <ProjectDialog
-          project={active}
-          slide={slide}
-          setSlide={setSlide}
-          onClose={() => setActive(null)}
-        />
+        {/* Modal */}
+        <Dialog
+          open={!!active}
+          onClose={() => setOpenId(null)}
+          fullWidth
+          maxWidth="md"
+          PaperProps={{
+            sx: {
+              borderRadius: 3,
+              overflow: 'hidden',
+              background: 'rgba(255,255,255,0.96)',
+              border: '1px solid rgba(0,0,0,0.06)',
+              backdropFilter: 'blur(24px)',
+            },
+          }}
+        >
+          {active && (
+            <Box sx={{ position: 'relative' }}>
+              {/* Header */}
+              <Box sx={{ p: 2.5, pb: 2 }}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography variant="h5" sx={{ fontWeight: 800 }}>{active.title}</Typography>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <IconButton aria-label="Previous project" onClick={prevProject}><ChevronLeft /></IconButton>
+                    <IconButton aria-label="Next project" onClick={nextProject}><ChevronRight /></IconButton>
+                    <IconButton aria-label="Close" onClick={() => setOpenId(null)}><X /></IconButton>
+                  </Stack>
+                </Stack>
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {active.description}
+                </Typography>
+              </Box>
+              <Divider />
+
+              {/* Body */}
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1.2fr 0.8fr' }, gap: 0 }}>
+                {/* Gallery */}
+                <Box sx={{ p: 2 }}>
+                  <Gallery media={active.media} index={mediaIndex} onChange={setMediaIndex} />
+                </Box>
+
+                {/* Details */}
+                <Box sx={{ p: 2 }}>
+                  {active.longDescription && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
+                      {active.longDescription}
+                    </Typography>
+                  )}
+
+                  <Typography variant="overline" sx={{ fontWeight: 800, color: 'text.secondary' }}>Tech</Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
+                    {active.tech.map(t => (
+                      <Chip key={t} label={t} size="small" variant="outlined"
+                        sx={{
+                          borderColor: 'var(--color-secondary-300)',
+                          color: 'var(--color-secondary-700)',
+                          '&:hover': { borderColor: 'var(--color-secondary-500)', backgroundColor: 'var(--color-secondary-50)' }
+                        }}
+                      />
+                    ))}
+                  </Stack>
+
+                  <Typography variant="overline" sx={{ fontWeight: 800, color: 'text.secondary' }}>Tags</Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
+                    {active.tags.map(t => (
+                      <Chip key={t} label={t} size="small" sx={{ background: 'rgba(245,158,11,0.08)', color: 'var(--color-primary-700)' }} />
+                    ))}
+                  </Stack>
+
+                  {active.links?.length ? (
+                    <>
+                      <Typography variant="overline" sx={{ fontWeight: 800, color: 'text.secondary' }}>Links</Typography>
+                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mt: 1 }}>
+                        {active.links.map(l => (
+                          <Button
+                            key={l.href}
+                            size="small"
+                            endIcon={<ExternalLink size={14} />}
+                            onClick={() => window.open(l.href, '_blank')}
+                          >
+                            {l.label}
+                          </Button>
+                        ))}
+                      </Stack>
+                    </>
+                  ) : null}
+                </Box>
+              </Box>
+            </Box>
+          )}
+        </Dialog>
       </Container>
     </Box>
   );
 }
 
-/* --------------------------------- Card -------------------------------- */
+/* --------------------------- Subcomponents --------------------------- */
+
+function FilterChips({
+  label, value, onChange, options, icon,
+}: {
+  label: string;
+  value: string | 'All';
+  onChange: (v: any) => void;
+  options: string[];
+  icon?: React.ReactNode;
+}) {
+  return (
+    <Stack direction="row" spacing={1} alignItems="center">
+      <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary' }}>
+        {icon} {label}:
+      </Typography>
+      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+        {options.map(opt => (
+          <Chip
+            key={opt}
+            label={opt}
+            size="small"
+            variant={value === opt ? 'filled' : 'outlined'}
+            onClick={() => onChange(opt)}
+            sx={{
+              ...(value === opt
+                ? { background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-secondary-500))', color: '#fff' }
+                : { borderColor: 'var(--color-neutral-300)' }),
+            }}
+          />
+        ))}
+      </Stack>
+    </Stack>
+  );
+}
 
 function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void }) {
-  const hero = project.media[0];
+  const [imgOk, setImgOk] = useState(true);
+  const cover = project.cover ?? (project.media.find(m => m.type === 'image') as ProjectMedia | undefined)?.src;
 
   return (
     <Paper
       elevation={0}
+      onClick={onOpen}
       sx={{
-        borderRadius: 3,
+        cursor: 'pointer',
         overflow: 'hidden',
-        background: 'rgba(255,255,255,0.92)',
-        border: '1px solid rgba(255,255,255,0.4)',
-        backdropFilter: 'blur(14px)',
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-        boxShadow: '0 14px 28px rgba(0,0,0,0.08)',
+        borderRadius: 3,
+        border: t => `1px solid ${t.palette.divider}`,
+        background: 'rgba(255,255,255,0.85)',
+        transition: 'transform .2s ease, box-shadow .2s ease',
         '&:hover': {
-          transform: 'translateY(-6px)',
-          boxShadow: '0 24px 48px rgba(0,0,0,0.12)',
+          transform: 'translateY(-4px)',
+          boxShadow: '0 25px 50px rgba(0,0,0,0.12)',
         },
       }}
     >
-      {/* Media preview */}
-      <Box sx={{ position: 'relative', aspectRatio: '16 / 10', background: 'var(--color-neutral-100)' }}>
-        {hero?.type === 'image' && (
+      {/* Cover */}
+      <Box sx={{ position: 'relative', pt: '56.25%', background: 'linear-gradient(135deg, rgba(245,158,11,.12), rgba(20,184,166,.12))' }}>
+        {cover && imgOk ? (
           <Box
             component="img"
-            src={hero.src}
-            alt={hero.alt || project.title}
-            loading="lazy"
-            sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            src={cover}
+            alt={project.title}
+            onError={() => setImgOk(false)}
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
           />
-        )}
-        {hero?.type === 'video' && (
-          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-            <Box
-              component="video"
-              src={hero.src}
-              poster={hero.poster}
-              muted
-              loop
-              autoPlay
-              playsInline
-              sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                right: 8,
-                bottom: 8,
-                px: 1,
-                py: 0.25,
-                borderRadius: 1,
-                background: 'rgba(0,0,0,0.45)',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 0.5,
-                fontSize: 12,
-              }}
-            >
-              <PlayCircle size={14} /> preview
-            </Box>
-          </Box>
-        )}
-        {hero?.type === 'iframe' && (
-          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-            <iframe
-              src={hero.src}
-              title={(hero as any).title || project.title}
-              loading="lazy"
-              style={{ border: 0, width: '100%', height: '100%' }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+        ) : (
+          <Box sx={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: 'var(--color-primary-600)' }}>
+            <ImageIcon />
           </Box>
         )}
 
-        {/* featured badge */}
-        {project.featured && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 10,
-              left: 10,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 0.5,
-              px: 1,
-              py: 0.5,
-              borderRadius: 999,
-              background: 'rgba(245,158,11,0.9)',
-              color: 'white',
-              fontSize: 12,
-              fontWeight: 700,
-            }}
-          >
-            <Star size={14} /> Featured
+        {/* Top badges */}
+        <Box sx={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+          {project.tags.slice(0, 3).map(t => (
+            <Chip key={t} label={t} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.9)' }} />
+          ))}
+          {project.spotlight && (
+            <Chip label="Spotlight" size="small" sx={{ bgcolor: 'rgba(245,158,11,0.9)', color: '#fff' }} />
+          )}
+        </Box>
+
+        {/* Media indicator */}
+        {project.media.some(m => m.type === 'video') && (
+          <Box sx={{ position: 'absolute', bottom: 8, right: 8 }}>
+            <Chip icon={<Play size={14} />} label="Video" size="small" sx={{ bgcolor: 'rgba(0,0,0,0.65)', color: 'white' }} />
           </Box>
         )}
       </Box>
 
-      {/* Content */}
-      <Box sx={{ p: 2.25 }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-          <Avatar sx={{ width: 28, height: 28, bgcolor: 'var(--color-primary-500)' }}>
-            <Layers size={16} color="white" />
-          </Avatar>
-          <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
-            {project.title}
-          </Typography>
-        </Stack>
-
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.25 }}>
-          {project.summary}
+      {/* Body */}
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>{project.title}</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+          {project.description}
         </Typography>
-
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 1 }}>
-          {project.tech.slice(0, 5).map(t => (
-            <Chip
-              key={t}
-              label={t}
-              size="small"
-              variant="outlined"
-              sx={{
-                borderColor: 'var(--color-primary-300)',
-                color: 'var(--color-primary-700)',
-                height: 24,
-                fontWeight: 600,
-              }}
-            />
+        <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap>
+          {project.tech.slice(0, 4).map(t => (
+            <Chip key={t} label={t} size="small" variant="outlined" />
           ))}
-          {project.tech.length > 5 && <Chip size="small" label={`+${project.tech.length - 5}`} />}
-        </Stack>
-
-        <Stack direction="row" spacing={1}>
-          <Button size="small" variant="contained" onClick={onOpen} sx={{ borderRadius: 2 }}>
-            View Case
-          </Button>
-          {project.links?.demo && (
-            <Button
-              size="small"
-              variant="outlined"
-              component="a"
-              href={project.links.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              startIcon={<ExternalLink size={16} />}
-              sx={{ borderRadius: 2 }}
-            >
-              Live
-            </Button>
-          )}
-          {project.links?.repo && (
-            <Button
-              size="small"
-              variant="outlined"
-              component="a"
-              href={project.links.repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              startIcon={<Github size={16} />}
-              sx={{ borderRadius: 2 }}
-            >
-              Code
-            </Button>
-          )}
         </Stack>
       </Box>
     </Paper>
   );
 }
 
-/* ------------------------------ Modal view ----------------------------- */
-
-function ProjectDialog({
-  project,
-  slide,
-  setSlide,
-  onClose,
+function Gallery({
+  media, index, onChange,
 }: {
-  project: Project | null;
-  slide: number;
-  setSlide: (n: number) => void;
-  onClose: () => void;
-}) {
-  const open = Boolean(project);
-  const total = project?.media.length ?? 0;
-
-  const next = useCallback(() => {
-    if (!project) return;
-    setSlide((s) => (s + 1) % project.media.length);
-  }, [project, setSlide]);
-
-  const prev = useCallback(() => {
-    if (!project) return;
-    setSlide((s) => (s - 1 + project.media.length) % project.media.length);
-  }, [project, setSlide]);
-
-  // keyboard nav
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-      else if (e.key === 'ArrowRight') next();
-      else if (e.key === 'ArrowLeft') prev();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open, onClose, next, prev]);
-
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 3,
-          overflow: 'hidden',
-          background: 'rgba(255,255,255,0.95)',
-          border: '1px solid rgba(255,255,255,0.45)',
-          backdropFilter: 'blur(20px)',
-        },
-      }}
-    >
-      {project && (
-        <Box>
-          {/* header */}
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ p: 2 }}>
-            <Stack direction="row" spacing={1.25} alignItems="center">
-              <Avatar sx={{ width: 32, height: 32, bgcolor: 'var(--color-primary-500)' }}>
-                <ImageIc size={16} color="white" />
-              </Avatar>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
-                {project.title}
-              </Typography>
-              {project.period && (
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: 1 }}>
-                  <Calendar size={14} />
-                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                    {project.period}
-                  </Typography>
-                </Stack>
-              )}
-              {project.role && (
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: 1 }}>
-                  <Briefcase size={14} />
-                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                    {project.role}
-                  </Typography>
-                </Stack>
-              )}
-            </Stack>
-            <IconButton onClick={onClose} aria-label="Close">
-              <X />
-            </IconButton>
-          </Stack>
-
-          {/* media carousel */}
-          <Box sx={{ position: 'relative', background: 'var(--color-neutral-100)' }}>
-            <Carousel
-              slides={project.media}
-              index={slide}
-              onNext={next}
-              onPrev={prev}
-              onJump={setSlide}
-            />
-          </Box>
-
-          {/* body */}
-          <Box sx={{ p: { xs: 2, md: 3 } }}>
-            {project.description && (
-              <Typography variant="body1" sx={{ mb: 1.5 }}>
-                {project.description}
-              </Typography>
-            )}
-
-            {/* highlights */}
-            {!!project.highlights?.length && (
-              <Box sx={{ mb: 2 }}>
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-                  <Info size={16} />
-                  <Typography variant="body2" sx={{ fontWeight: 800 }}>
-                    Highlights
-                  </Typography>
-                </Stack>
-                {project.highlights.map((h, i) => (
-                  <Typography key={i} variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                    • {h}
-                  </Typography>
-                ))}
-              </Box>
-            )}
-
-            {/* tech */}
-            <Divider sx={{ my: 2 }} />
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
-              {project.tech.map((t) => (
-                <Chip
-                  key={t}
-                  label={t}
-                  size="small"
-                  variant="outlined"
-                  sx={{
-                    borderColor: 'var(--color-primary-300)',
-                    color: 'var(--color-primary-700)',
-                    height: 24,
-                    fontWeight: 600,
-                  }}
-                />
-              ))}
-            </Stack>
-
-            {/* links */}
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              {project.links?.demo && (
-                <Button
-                  variant="contained"
-                  component="a"
-                  href={project.links.demo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  startIcon={<ExternalLink size={16} />}
-                  sx={{ borderRadius: 2 }}
-                >
-                  Live Site
-                </Button>
-              )}
-              {project.links?.repo && (
-                <Button
-                  variant="outlined"
-                  component="a"
-                  href={project.links.repo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  startIcon={<Github size={16} />}
-                  sx={{ borderRadius: 2 }}
-                >
-                  Repo
-                </Button>
-              )}
-              {project.links?.caseStudy && (
-                <Button
-                  variant="outlined"
-                  component="a"
-                  href={project.links.caseStudy}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  startIcon={<Link2 size={16} />}
-                  sx={{ borderRadius: 2 }}
-                >
-                  Case Study
-                </Button>
-              )}
-            </Stack>
-          </Box>
-        </Box>
-      )}
-    </Dialog>
-  );
-}
-
-/* ------------------------------- Carousel ------------------------------ */
-
-function Carousel({
-  slides,
-  index,
-  onNext,
-  onPrev,
-  onJump,
-}: {
-  slides: Project['media'];
+  media: ProjectMedia[];
   index: number;
-  onNext: () => void;
-  onPrev: () => void;
-  onJump: (i: number) => void;
+  onChange: (n: number) => void;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const has = media.length;
+  const clamp = (n: number) => (n + has) % has;
 
-  // For swipe on touch devices
+  const next = () => onChange(clamp(index + 1));
+  const prev = () => onChange(clamp(index - 1));
+
+  // swipe support (simple)
+  const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     let startX = 0;
-    let dx = 0;
-
-    const onTouchStart = (e: TouchEvent) => {
-      startX = e.touches[0].clientX;
-      dx = 0;
+    const onDown = (e: TouchEvent) => (startX = e.touches[0].clientX);
+    const onUp = (e: TouchEvent) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (dx > 40) prev();
+      else if (dx < -40) next();
     };
-    const onTouchMove = (e: TouchEvent) => {
-      dx = e.touches[0].clientX - startX;
-    };
-    const onTouchEnd = () => {
-      if (dx > 60) onPrev();
-      else if (dx < -60) onNext();
-    };
-
-    el.addEventListener('touchstart', onTouchStart);
-    el.addEventListener('touchmove', onTouchMove);
-    el.addEventListener('touchend', onTouchEnd);
+    el.addEventListener('touchstart', onDown, { passive: true });
+    el.addEventListener('touchend', onUp, { passive: true });
     return () => {
-      el.removeEventListener('touchstart', onTouchStart);
-      el.removeEventListener('touchmove', onTouchMove);
-      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchstart', onDown);
+      el.removeEventListener('touchend', onUp);
     };
-  }, [onNext, onPrev]);
+  }, [index]);
+
+  const item = media[index];
 
   return (
-    <Box sx={{ position: 'relative' }}>
-      {/* slide area */}
-      <Box ref={ref} sx={{ position: 'relative', height: { xs: 320, sm: 420, md: 460 }, overflow: 'hidden' }}>
-        <AnimatePresence initial={false} mode="popLayout">
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.3 }}
-            style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}
-          >
-            <Media slide={slides[index]} />
-          </motion.div>
+    <Box ref={ref} sx={{ position: 'relative' }}>
+      {/* Viewer */}
+      <Box
+        sx={{
+          position: 'relative',
+          borderRadius: 2,
+          overflow: 'hidden',
+          border: t => `1px solid ${t.palette.divider}`,
+          background: 'rgba(255,255,255,0.6)',
+        }}
+      >
+        <AnimatePresence mode="wait">
+          {item?.type === 'image' ? (
+            <motion.img
+              key={index + '-img'}
+              src={item.src}
+              alt={item.alt ?? 'Project image'}
+              initial={{ opacity: 0.0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.25 }}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+          ) : item?.type === 'video' ? (
+            <motion.div
+              key={index + '-vid'}
+              initial={{ opacity: 0.0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.25 }}
+              style={{ position: 'relative', width: '100%', background: 'black' }}
+            >
+              {item.provider === 'youtube' || item.provider === 'vimeo' ? (
+                <Box sx={{ position: 'relative', pt: '56.25%' }}>
+                  <Box
+                    component="iframe"
+                    src={item.src}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    sx={{
+                      position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0,
+                      borderRadius: 0,
+                    }}
+                  />
+                </Box>
+              ) : (
+                <Box component="video" src={item.src} poster={item.poster} controls autoPlay={false} sx={{ width: '100%', display: 'block' }} />
+              )}
+            </motion.div>
+          ) : null}
         </AnimatePresence>
 
-        {/* Nav buttons */}
-        <IconButton
-          aria-label="Previous"
-          onClick={onPrev}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: 8,
-            transform: 'translateY(-50%)',
-            bgcolor: 'rgba(255,255,255,0.9)',
-            '&:hover': { bgcolor: 'white' },
-          }}
-        >
-          <ChevronLeft />
-        </IconButton>
-        <IconButton
-          aria-label="Next"
-          onClick={onNext}
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            right: 8,
-            transform: 'translateY(-50%)',
-            bgcolor: 'rgba(255,255,255,0.9)',
-            '&:hover': { bgcolor: 'white' },
-          }}
-        >
-          <ChevronRight />
-        </IconButton>
+        {/* Arrows */}
+        {has > 1 && (
+          <>
+            <IconButton
+              aria-label="Previous media"
+              onClick={prev}
+              sx={{ position: 'absolute', top: '50%', left: 8, transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.9)' }}
+            >
+              <ChevronLeft />
+            </IconButton>
+            <IconButton
+              aria-label="Next media"
+              onClick={next}
+              sx={{ position: 'absolute', top: '50%', right: 8, transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.9)' }}
+            >
+              <ChevronRight />
+            </IconButton>
+          </>
+        )}
       </Box>
 
-      {/* thumbnails */}
-      <Stack direction="row" spacing={1} sx={{ p: 1.5, pt: 1, overflowX: 'auto' }}>
-        {slides.map((s, i) => (
-          <Tooltip key={i} title={s.type === 'image' ? 'Image' : s.type === 'video' ? 'Video' : 'Embed'} arrow>
+      {/* Thumbs */}
+      {has > 1 && (
+        <Stack direction="row" spacing={1} sx={{ mt: 1.5, overflowX: 'auto', pb: 0.5 }}>
+          {media.map((m, i) => (
             <Box
-              onClick={() => onJump(i)}
+              key={i}
+              onClick={() => onChange(i)}
               sx={{
                 width: 72,
                 height: 48,
-                borderRadius: 1,
+                borderRadius: 1.5,
                 overflow: 'hidden',
-                border: i === index ? '2px solid var(--color-primary-500)' : '1px solid rgba(0,0,0,0.08)',
+                border: i === index ? '2px solid var(--color-primary-500)' : '1px solid rgba(0,0,0,0.1)',
                 cursor: 'pointer',
-                position: 'relative',
                 flex: '0 0 auto',
+                position: 'relative',
+                background: 'linear-gradient(135deg, rgba(245,158,11,.12), rgba(20,184,166,.12))',
               }}
             >
-              {s.type === 'image' && (
-                <Box component="img" src={s.src} alt="" loading="lazy" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              )}
-              {s.type === 'video' && (
-                <Box component="img" src={(s.poster || '/vite.svg')} alt="" loading="lazy" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              )}
-              {s.type === 'iframe' && (
-                <Box sx={{ width: '100%', height: '100%', display: 'grid', placeItems: 'center', background: 'var(--color-neutral-100)' }}>
-                  <PlayCircle size={16} />
+              {m.type === 'image' ? (
+                <Box component="img" src={m.src} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <Box sx={{ display: 'grid', placeItems: 'center', width: '100%', height: '100%', color: 'white', background: 'black' }}>
+                  <Play size={18} />
                 </Box>
               )}
             </Box>
-          </Tooltip>
-        ))}
-      </Stack>
-    </Box>
-  );
-}
-
-/* ------------------------------- Media cell ---------------------------- */
-
-function Media({ slide }: { slide: Project['media'][number] }) {
-  if (!slide) return null;
-
-  if (slide.type === 'image') {
-    return (
-      <Box sx={{ width: '100%', height: '100%' }}>
-        <Box
-          component="img"
-          src={slide.src}
-          alt={slide.alt || ''}
-          loading="lazy"
-          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
-      </Box>
-    );
-  }
-
-  if (slide.type === 'video') {
-    return (
-      <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
-        <Box
-          component="video"
-          src={slide.src}
-          poster={slide.poster}
-          controls
-          playsInline
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
-      </Box>
-    );
-  }
-
-  // iframe (YouTube, Vimeo...)
-  return (
-    <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-      <iframe
-        src={slide.src}
-        title={(slide as any).title || 'Embedded media'}
-        loading="lazy"
-        style={{ border: 0, width: '100%', height: '100%' }}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      />
+          ))}
+        </Stack>
+      )}
     </Box>
   );
 }

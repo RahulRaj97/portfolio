@@ -1,0 +1,128 @@
+{
+  "personal_info": {
+    "name": "Rahul Raj",
+    "date_of_birth": "1997-08-11",
+    "nationality": "Pakistani",
+    "phone": "+49 15237057182",
+    "email": "rahule.lohana97@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/rahulraj97/",
+    "address": {
+      "street": "Innere Uferstraße 20",
+      "postal_code": "86153",
+      "city": "Augsburg",
+      "country": "Germany"
+    },
+    "languages": [
+      { "name": "Urdu", "proficiency": "native" },
+      {
+        "name": "English",
+        "speaking": "C1",
+        "reading": "C1",
+        "writing": "C1",
+        "listening": "C1"
+      }
+    ],
+    "skills_summary": "Dedicated Software Engineer with 4+ years experience in frontend & backend development, data engineering and cloud computing. Proficient in Angular, TypeScript, Python, C++."
+  },
+
+  "work_experience": [
+    {
+      "company": "Navvis GmbH",
+      "role": "Software Engineer",
+      "location": "Munich, Germany",
+      "period": { "start": "2022-12-01", "end": null },
+      "responsibilities": [
+        "Key member of MAP Team Squad A – mobile mapping device software.",
+        "Developed & maintained software using Angular, TypeScript, Python, C++, Electron.",
+        "Collaborated with UI/UX team to implement new features and fix issues.",
+        "Used Cypress (integration) & Angular (unit) testing for reliability.",
+        "Led lag‑evaluation initiatives; migrated systems to Ubuntu 22.04 & ROS topics.",
+        "Maintained device‑manager web portal built with React, TypeScript, Vite, Python."
+      ]
+    },
+    {
+      "company": "Careem",
+      "role": "Software Engineer I (Data & AI)",
+      "location": "Karachi, Pakistan",
+      "period": { "start": "2021-11-01", "end": "2022-10-31" },
+      "responsibilities": [
+        "Enhanced Navigator – data discovery tool; added micro‑service data view on Kubernetes.",
+        "Added Airflow DAG for daily data updates, improving accuracy.",
+        "Contributed to Careem Insights: database shortlisting, multi‑table joins; CI/CD via Jenkins & Kubernetes.",
+        "Implemented service monitoring metrics on Argus and improved open‑source Superset."
+      ]
+    },
+    {
+      "company": "Brandverse",
+      "role": "Junior Full Stack Engineer",
+      "location": "Karachi, Pakistan",
+      "period": { "start": "2020-11-01", "end": "2021-11-30" },
+      "responsibilities": [
+        "Developed & maintained Brandverse’s automated photography/video solution.",
+        "Built Chikoo e‑commerce platform features (WhatsApp ordering, voucher system).",
+        "Used React, TypeScript, Node, MongoDB, Kubernetes, Dgraph; deployed on Google Cloud Platform.",
+        "Led outsourced front‑end project for new service on Chikoo."
+      ]
+    },
+    {
+      "company": "Afiniti",
+      "role": "Insights Intern",
+      "location": "Karachi, Pakistan",
+      "period": { "start": "2019-07-01", "end": "2019-08-31" },
+      "responsibilities": [
+        "Deployed LimeSurvey with Docker for HR data collection.",
+        "Contributed to MegaACD Project – React, Node.js, TypeScript, PostgreSQL.",
+        "Assisted in Authentication Module using JWT."
+      ]
+    }
+  ],
+
+  "education": [
+    {
+      "institution": "Ghulam Ishaq Khan Institute of Engineering Sciences and Technology",
+      "degree": "Bachelor of Science in Computer Science",
+      "period": { "start": "2016-07-31", "end": "2020-07-30" },
+      "location": "Topi, Pakistan",
+      "website": "https://www.giki.edu.pk/"
+    },
+    {
+      "institution": "Beaconhouse College Campus Defence",
+      "degree": "GCE A Levels",
+      "period": { "start": "2014-07-31", "end": "2016-07-30" },
+      "location": "Karachi, Pakistan",
+      "website": "https://www.beaconhouse.net/"
+    },
+    {
+      "institution": "The City School P.A.F Chapter",
+      "degree": "GCE O Levels",
+      "period": { "start": "2012-07-31", "end": "2014-07-30" },
+      "location": "Karachi, Pakistan",
+      "website": "https://thecityschool.edu.pk/"
+    }
+  ],
+
+  "technical_skills": {
+    "frontend": [
+      "JavaScript",
+      "TypeScript",
+      "ReactJS",
+      "AngularJS",
+      "Material UI",
+      "Sass",
+      "HTML",
+      "CSS"
+    ],
+    "backend": ["Node.js", "Express", "socket.io"],
+    "databases": ["MongoDB", "MySQL", "PostgreSQL"],
+    "cloud_and_devops": [
+      "Kubernetes",
+      "Docker",
+      "Google Cloud Platform",
+      "Jenkins",
+      "Airflow"
+    ],
+    "other": ["C++", "Electron", "ROS", "Ubuntu"]
+  },
+
+  "digital_skills": "Not explicitly listed – inferred from project tools and environments."
+}

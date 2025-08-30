@@ -51,7 +51,7 @@ export const globalStyles = css`
   }
 
   /* Focus management */
-  *:focus {
+  *:focus-visible {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
   }

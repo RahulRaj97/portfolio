@@ -50,12 +50,6 @@ export default function Hero() {
   // springs for parallax/tilt
   const spring = (val: any, fac: number) =>
     useSpring(useTransform(val, (n: number) => n * fac), { stiffness: 120, damping: 18 });
-  const shineX = useSpring(useTransform(nx, (n) => n * 60), { stiffness: 180, damping: 20 });
-  const shineY = useSpring(useTransform(ny, (n) => n * 60), { stiffness: 180, damping: 20 });
-  const tiltX = useSpring(useTransform(ny, (n) => n * -6), { stiffness: 160, damping: 18 });
-  const tiltY = useSpring(useTransform(nx, (n) => n * 6), { stiffness: 160, damping: 18 });
-
-  const LayerItems = useMemo(() => layers, []);
 
   return (
     <Box
@@ -71,21 +65,6 @@ export default function Hero() {
     >
       {/* Ambient aurora gradients behind everything (non-repeating) */}
       <Aurora nx={nx} ny={ny} />
-
-      {/* Tiny parallax accents */}
-      <Box sx={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
-        {LayerItems.map((l, i) => (
-          <motion.div key={i} style={{ position: 'absolute', left: l.left, top: l.top, x: spring(nx, l.depth), y: spring(ny, l.depth) }}>
-            {l.shape === 'dot' ? (
-              <Dot size={l.size} color={l.color} Icon={l.Icon} />
-            ) : (
-              <Square size={l.size} color={l.color} />
-            )}
-          </motion.div>
-        ))}
-        
-
-      </Box>
 
       {/* Light follower ring */}
       <motion.div style={{ position: 'absolute', x: spring(nx, 40), y: spring(ny, 40), zIndex: 1, pointerEvents: 'none' }}>
@@ -319,28 +298,6 @@ function Typewriter({
 }
 
 /* ---------------------------- helpers & bits ---------------------------- */
-
-function Dot({ size, color, Icon }: { size: number; color: string; Icon?: any }) {
-  return (
-    <Box
-      sx={{
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        background: color,
-        display: 'grid',
-        placeItems: 'center',
-        opacity: 0.65,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-      }}
-    >
-      {Icon ? <Icon size={size * 0.45} color="var(--color-secondary-700)" /> : null}
-    </Box>
-  );
-}
-function Square({ size, color }: { size: number; color: string }) {
-  return <Box sx={{ width: size, height: size, borderRadius: '10px', background: color, opacity: 0.55, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }} />;
-}
 
 /* photo card with glass and shadow (no shine, no tilt, bigger size) */
 function PhotoCard() {

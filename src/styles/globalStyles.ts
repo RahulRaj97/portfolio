@@ -33,16 +33,13 @@ export const globalStyles = css`
   ::-webkit-scrollbar {
     width: 6px;
   }
-
   ::-webkit-scrollbar-track {
     background: var(--color-neutral-100);
   }
-
   ::-webkit-scrollbar-thumb {
     background: var(--color-neutral-300);
     border-radius: 3px;
   }
-
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-neutral-400);
   }
@@ -72,7 +69,6 @@ export const globalStyles = css`
     z-index: 10000;
     font-weight: 500;
   }
-
   .skip-link:focus {
     top: 6px;
   }
@@ -124,19 +120,21 @@ export const globalStyles = css`
     line-height: 1.2;
     letter-spacing: -0.025em;
   }
-
   p {
     margin-bottom: 1rem;
   }
 
-  /* Link styling */
-  a {
+  /* Link styling
+     IMPORTANT: Do NOT style MUI buttons rendered as <a>.
+     Exclude .MuiButton-root, .MuiIconButton-root, and .MuiButtonBase-root. */
+  a:not(.MuiButton-root):not(.MuiIconButton-root):not(.MuiButtonBase-root) {
     color: var(--color-primary-600);
     text-decoration: none;
     transition: color var(--transition-fast);
   }
-
-  a:hover {
+  a:not(.MuiButton-root):not(.MuiIconButton-root):not(
+      .MuiButtonBase-root
+    ):hover {
     color: var(--color-primary-700);
   }
 

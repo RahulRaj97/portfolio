@@ -1,6 +1,6 @@
 import { Box, Chip, Stack, Typography } from '@mui/material';
 
-const TECH_STACK = ['TypeScript', 'React', 'Angular', 'Node.js', 'Python', 'Kubernetes', 'Docker', 'GCP'];
+const TECH_STACK = ['JavaScript', 'TypeScript', 'React', 'Angular', 'Node.js', 'Python', 'FastAPI', 'MongoDB', 'PostgreSQL', 'Kubernetes', 'AWS'];
 
 export function TechStack() {
   return (

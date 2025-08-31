@@ -40,7 +40,6 @@ export function getTechFromBullets(bullets: string[]) {
 }
 
 export function summarizeBullets(bullets: string[]) {
-  // Keep your first 2–3 lines crisp
   return bullets.slice(0, 3).map((t) =>
     t
       .replace(/^Core contributor on /, "Led development of ")
@@ -67,16 +66,4 @@ export function computeYears(): string {
 export function uniqueCountries() {
   const all = WORK.map((w) => (w.location.split(",").pop() || "").trim());
   return Array.from(new Set(all.filter(Boolean)));
-}
-
-export function tallyTech() {
-  const counts: Record<string, number> = {};
-  for (const w of WORK) {
-    for (const t of getTechFromBullets(w.bullets)) {
-      counts[t] = (counts[t] || 0) + 1;
-    }
-  }
-  return Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 8);
 }

@@ -4,18 +4,11 @@ import { Sparkles } from 'lucide-react';
 
 import { Typewriter } from './Typewriter';
 import { Magnetic } from './Magnetic';
-import { StatCard } from './StatCard';
 import { TechStack } from './TechStack';
 import { KeyStrengths } from './KeyStrengths';
 import SocialIcons from '@/components/common/SocialIcons';
 
 const WORDS = ['Ideas', 'Products', 'Revenue', 'Reality'];
-
-const STAT_ITEMS = [
-  { k: 'Full-Stack', v: 'React • Node • Python' },
-  { k: 'Cloud Native', v: 'Kubernetes • Docker • GCP' },
-  { k: 'Data & AI', v: 'Analytics • ML • Automation' },
-];
 
 export function HeroContent() {
   return (
@@ -84,9 +77,6 @@ export function HeroContent() {
               </Button>
             </Magnetic>
           </Stack>
-
-          {/* Stats */}
-          <StatCard items={STAT_ITEMS} />
 
           {/* Tech stack showcase */}
           <TechStack />

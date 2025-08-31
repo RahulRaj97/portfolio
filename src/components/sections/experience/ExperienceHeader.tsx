@@ -32,7 +32,7 @@ export function ExperienceHeader() {
           </span>
         </Typography>
         <Typography variant="h6" sx={{ color: 'text.secondary', maxWidth: 760, mx: 'auto' }}>
-          From Karachi to Munich, I've shipped production software across frontend, platforms, and data—always with a product mindset.
+        I've shipped production software across the entire stack—building complete solutions with a product mindset.
         </Typography>
       </Box>
     </motion.div>

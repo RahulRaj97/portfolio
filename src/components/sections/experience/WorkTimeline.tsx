@@ -6,12 +6,12 @@ import { WORK } from '@/data/resume';
 import { formatMonthRange, getTechFromBullets, summarizeBullets } from '@/components/sections/experience/utils';
 
 interface WorkTimelineProps {
-  filteredWork: typeof WORK;
+  work: typeof WORK;
   expanded: Record<string, boolean>;
   onToggleExpanded: (id: string) => void;
 }
 
-export function WorkTimeline({ filteredWork, expanded, onToggleExpanded }: WorkTimelineProps) {
+export function WorkTimeline({ work, expanded, onToggleExpanded }: WorkTimelineProps) {
   return (
     <Box>
       <Box sx={{ position: 'relative' }}>
@@ -26,12 +26,12 @@ export function WorkTimeline({ filteredWork, expanded, onToggleExpanded }: WorkT
           borderRadius: 2,
           opacity: 0.9
         }} />
-        {filteredWork.map((work, index) => {
-          const id = `${work.company}-${work.start}`;
+        {work.map((workItem, index) => {
+          const id = `${workItem.company}-${workItem.start}`;
           const isOpen = !!expanded[id];
-          const summary = summarizeBullets(work.bullets);
-          const rest = work.bullets.slice(summary.length);
-          const tech = getTechFromBullets(work.bullets);
+          const summary = summarizeBullets(workItem.bullets);
+          const rest = workItem.bullets.slice(summary.length);
+          const tech = getTechFromBullets(workItem.bullets);
           
           return (
             <motion.div
@@ -83,23 +83,23 @@ export function WorkTimeline({ filteredWork, expanded, onToggleExpanded }: WorkT
                       </Avatar>
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
-                          {work.role}
+                          {workItem.role}
                         </Typography>
                         <Typography variant="body2" sx={{ color: 'var(--color-primary-700)', fontWeight: 700 }}>
-                          {work.company}
+                          {workItem.company}
                         </Typography>
                       </Box>
                       <Stack spacing={0.5} alignItems="flex-end">
                         <Stack direction="row" spacing={1} alignItems="center">
                           <Calendar size={14} color="var(--color-neutral-500)" />
                           <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                            {formatMonthRange(work.start, work.end)}
+                            {formatMonthRange(workItem.start, workItem.end)}
                           </Typography>
                         </Stack>
                         <Stack direction="row" spacing={1} alignItems="center">
                           <MapPin size={14} color="var(--color-neutral-500)" />
                           <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                            {work.location}
+                            {workItem.location}
                           </Typography>
                         </Stack>
                       </Stack>

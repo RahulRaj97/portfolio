@@ -1,6 +1,5 @@
-import { Chip, Divider, Paper, Stack, Typography } from '@mui/material';
+import { Divider, Paper, Stack } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Flame } from 'lucide-react';
 
 import { Stat } from '@/components/sections/experience/Stat';
 
@@ -8,10 +7,9 @@ interface ExperienceStatsProps {
   yearsLabel: string;
   workCount: number;
   countries: string[];
-  techTop: [string, number][];
 }
 
-export function ExperienceStats({ yearsLabel, workCount, countries, techTop }: ExperienceStatsProps) {
+export function ExperienceStats({ yearsLabel, workCount, countries }: ExperienceStatsProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -37,23 +35,6 @@ export function ExperienceStats({ yearsLabel, workCount, countries, techTop }: E
           <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' } }} />
           <Stat label="Regions" value={countries.join(' • ') || '—'} />
           <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' } }} />
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Flame size={16} />
-            <Typography variant="body2" sx={{ fontWeight: 700 }}>Top tech:</Typography>
-            {techTop.map(([t]) => (
-              <Chip
-                key={t}
-                label={t}
-                size="small"
-                variant="outlined"
-                sx={{
-                  borderColor: 'var(--color-primary-300)',
-                  color: 'var(--color-primary-700)',
-                  height: 24,
-                }}
-              />
-            ))}
-          </Stack>
         </Stack>
       </Paper>
     </motion.div>

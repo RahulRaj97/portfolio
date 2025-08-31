@@ -1,9 +1,9 @@
-import { Box, Paper, Stack, Typography, Avatar, Button, Divider, Chip } from '@mui/material';
+import { Box, Paper, Stack, Typography, Avatar, Button, Divider, Chip, Link } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Building2, Calendar, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
+import { Building2, Calendar, MapPin, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 
 import { WORK } from '@/data/resume';
-import { formatMonthRange, getTechFromBullets, summarizeBullets } from '@/components/sections/experience/utils';
+import { formatMonthRange, summarizeBullets } from '@/components/sections/experience/utils';
 
 interface WorkTimelineProps {
   work: typeof WORK;
@@ -12,6 +12,16 @@ interface WorkTimelineProps {
 }
 
 export function WorkTimeline({ work, expanded, onToggleExpanded }: WorkTimelineProps) {
+  // Company logo mapping
+  const getCompanyLogo = (companyName: string) => {
+    const logoMap: Record<string, string> = {
+      'Navvis GmbH': 'navvis.webp',
+      'Careem': 'careem.png',
+      'Brandverse': 'brandverse.png'
+    };
+    return logoMap[companyName] || null;
+  };
+
   return (
     <Box>
       <Box sx={{ position: 'relative' }}>
@@ -31,7 +41,6 @@ export function WorkTimeline({ work, expanded, onToggleExpanded }: WorkTimelineP
           const isOpen = !!expanded[id];
           const summary = summarizeBullets(workItem.bullets);
           const rest = workItem.bullets.slice(summary.length);
-          const tech = getTechFromBullets(workItem.bullets);
           
           return (
             <motion.div
@@ -78,16 +87,68 @@ export function WorkTimeline({ work, expanded, onToggleExpanded }: WorkTimelineP
                   >
                     {/* header */}
                     <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1.5 }}>
-                      <Avatar sx={{ bgcolor: 'var(--color-primary-500)', width: 44, height: 44 }}>
-                        <Building2 size={20} color="white" />
+                      <Avatar 
+                        sx={{ 
+                          width: 44, 
+                          height: 44,
+                          borderRadius: 2,
+                          overflow: 'hidden',
+                          bgcolor: getCompanyLogo(workItem.company) ? 'transparent' : 'var(--color-primary-500)'
+                        }}
+                      >
+                        {getCompanyLogo(workItem.company) ? (
+                          <Box
+                            component="img"
+                            src={getCompanyLogo(workItem.company)!}
+                            alt={`${workItem.company} logo`}
+                            sx={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'contain',
+                              padding: '4px',
+                              transform: 'scale(1)'
+                            }}
+                          />
+                        ) : (
+                          <Building2 size={20} color="white" />
+                        )}
                       </Avatar>
                       <Box sx={{ flex: 1, minWidth: 0 }}>
                         <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.2 }}>
                           {workItem.role}
                         </Typography>
-                        <Typography variant="body2" sx={{ color: 'var(--color-primary-700)', fontWeight: 700 }}>
-                          {workItem.company}
-                        </Typography>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Typography variant="body2" sx={{ color: 'var(--color-primary-700)', fontWeight: 700 }}>
+                            {workItem.company}
+                          </Typography>
+                          {workItem.website && (
+                            <Link 
+                              href={workItem.website} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              sx={{ 
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                color: 'var(--color-primary-600)', 
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                                fontSize: '0.7rem',
+                                padding: '1px 6px',
+                                borderRadius: '10px',
+                                border: '1px solid var(--color-primary-300)',
+                                backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                                '&:hover': { 
+                                  backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                                  borderColor: 'var(--color-primary-400)'
+                                }
+                              }}
+                            >
+                              <ExternalLink size={10} />
+                              Website
+                            </Link>
+                          )}
+                        </Stack>
                       </Box>
                       <Stack spacing={0.5} alignItems="flex-end">
                         <Stack direction="row" spacing={1} alignItems="center">
@@ -157,15 +218,20 @@ export function WorkTimeline({ work, expanded, onToggleExpanded }: WorkTimelineP
                       </Box>
                     )}
 
-                    {/* tech */}
-                    {tech.length > 0 && (
+                    {/* tech stack */}
+                    {workItem.techStack && workItem.techStack.length > 0 && (
                       <>
                         <Divider sx={{ my: 1.5 }} />
+                        <Box sx={{ mb: 1 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 700, color: 'var(--color-secondary-700)' }}>
+                            Tech Stack
+                          </Typography>
+                        </Box>
                         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                          {tech.map(t => (
+                          {workItem.techStack.map(tech => (
                             <Chip
-                              key={t}
-                              label={t}
+                              key={tech}
+                              label={tech}
                               size="small"
                               variant="outlined"
                               sx={{
@@ -173,6 +239,7 @@ export function WorkTimeline({ work, expanded, onToggleExpanded }: WorkTimelineP
                                 color: 'var(--color-primary-700)',
                                 height: 24,
                                 fontWeight: 600,
+                                fontSize: '0.7rem',
                               }}
                             />
                           ))}

@@ -6,6 +6,8 @@ export type WorkItem = {
   start: string; // YYYY-MM
   end?: string; // YYYY-MM or undefined (present)
   bullets: string[];
+  website?: string;
+  techStack?: string[];
 };
 
 export type EducationItem = {
@@ -14,6 +16,8 @@ export type EducationItem = {
   start: string;
   end: string;
   location: string;
+  website?: string;
+  achievements?: string[];
 };
 
 export const ABOUT = {
@@ -35,11 +39,21 @@ export const WORK: WorkItem[] = [
     role: "Software Engineer",
     location: "Munich, Germany",
     start: "2022-12",
+    website: "https://navvis.com",
     bullets: [
-      "Core contributor on mobile mapping device software (Angular, TypeScript, Python, C++, Electron).",
-      "Led lag-evaluation initiatives; migrated systems to Ubuntu 22.04 & ROS topics.",
-      "Maintained device-manager web portal (React, TypeScript, Vite, Python).",
-      "Improved reliability with Cypress integration tests and Angular unit tests.",
+      "Software Engineer (Jan 2025 - Present) - Leading end-to-end development of cutting-edge mobile mapping device software",
+      "Advanced Software Engineer (Dec 2022 - Dec 2024) - Core contributor to device management systems and UI development",
+      "Architecting and shipping system software from concept to production, including WiFi support, software updates, and analytics tracking",
+      "Driving SaaS revenue growth through new subscription license implementation and end-to-end feature development",
+      "Researching and prototyping next-generation ARM-based devices to expand company's hardware portfolio",
+    ],
+    techStack: [
+      "JavaScript",
+      "TypeScript",
+      "Angular",
+      "Python",
+      "C++",
+      "Electron",
     ],
   },
   {
@@ -48,11 +62,22 @@ export const WORK: WorkItem[] = [
     location: "Karachi, Pakistan",
     start: "2021-11",
     end: "2022-10",
+    website: "https://careem.com",
     bullets: [
-      "Enhanced Navigator (data discovery); added micro-service data view on Kubernetes.",
-      "Automated daily data updates with Airflow DAGs, improved accuracy & freshness.",
-      "Contributed to Careem Insights: database shortlisting, multi-table joins; CI/CD via Jenkins & Kubernetes.",
-      "Implemented service monitoring metrics on Argus and improved OSS Superset.",
+      "Built and maintained Careem Insights analytics platform on Apache Superset, serving internal users across the organization",
+      "Developed end-to-end features for data analytics platform, collaborating with infrastructure team for Kubernetes deployment and CI/CD implementation",
+      "Created scalable Airflow DAGs enabling users to refresh analytics tables at scale, improving data freshness and reliability",
+      "Built Navigator data discovery platform on Amundsen open-source, enabling faster querying across all microservices and data tables",
+      "Contributed to open-source projects including Amundsen and Apache Superset, enhancing platform capabilities",
+    ],
+    techStack: [
+      "React",
+      "Python",
+      "Kubernetes",
+      "Terraform",
+      "Airflow",
+      "Apache Pinot",
+      "Java",
     ],
   },
   {
@@ -61,11 +86,14 @@ export const WORK: WorkItem[] = [
     location: "Karachi, Pakistan",
     start: "2020-11",
     end: "2021-11",
+    website: "https://www.brandver.se",
     bullets: [
-      "Built features for automated photo/video solution and Chikoo e-commerce platform.",
-      "React, TypeScript, Node, MongoDB, Kubernetes, Dgraph; deployed on GCP.",
-      "Led outsourced front-end project for a new Chikoo service.",
+      "Founded and built Brandverse imaging platform technology, enabling automated image processing workflows for enterprise clients",
+      "Developed Chikoo e-commerce platform allowing users to create websites and start selling directly from their mobile devices",
+      "Built WhatsApp bot system for direct ordering, tracking, and payment processing, improving customer engagement and conversion",
+      "Architected and implemented voucher microservices to support promotional campaigns and customer retention strategies",
     ],
+    techStack: ["React", "Node.js", "GCP", "Dgraph", "TypeScript", "MongoDB"],
   },
 ];
 
@@ -77,7 +105,24 @@ export const EDUCATION: EducationItem[] = [
     start: "2016-07",
     end: "2020-07",
     location: "Topi, Pakistan",
+    website: "https://giki.edu.pk",
+    achievements: ["President of IET OnCampus GIKI Society"],
   },
+];
+
+export const LANGUAGES = [
+  { language: "English", level: "Native" },
+  { language: "German", level: "A1" },
+  { language: "Urdu", level: "Native" },
+];
+
+export const INTERESTS = [
+  "Open Source",
+  "AI & Machine Learning",
+  "Data Engineering",
+  "Mentoring & Teaching",
+  "International Collaboration",
+  "Problem Solving",
 ];
 
 export const PROJECTS = [

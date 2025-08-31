@@ -8,6 +8,7 @@ import {
   WorkTimeline,
   ExperienceHeader,
   ExperienceStats,
+  LanguagesAndInterests,
   computeYears,
   uniqueCountries,
 } from './experience';
@@ -33,7 +34,7 @@ export default function Experience() {
           countries={countries}
         />
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1.1fr 0.9fr' }, gap: 6 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 6 }}>
           <WorkTimeline
             work={WORK}
             expanded={expanded}
@@ -41,6 +42,9 @@ export default function Experience() {
           />
           <Box>
             <Education />
+            <Box sx={{ mt: 4 }}>
+              <LanguagesAndInterests />
+            </Box>
           </Box>
         </Box>
       </Container>

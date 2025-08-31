@@ -3,7 +3,6 @@ import {
   Avatar,
   Box,
   Button,
-  Chip,
   Container,
   IconButton,
   Paper,
@@ -66,7 +65,7 @@ export default function Contact() {
     }
   }, [emailAddress]);
 
-  const submitForm = async (payload: typeof formData) => {
+  const submitForm = async () => {
     // SPA-friendly placeholder: simulate network then resolve.
     // Swap this with a real POST to your backend (or Formspree/Netlify).
     await new Promise((r) => setTimeout(r, 1200));
@@ -86,7 +85,7 @@ export default function Contact() {
 
     setIsSubmitting(true);
     try {
-      const res = await submitForm(formData);
+      const res = await submitForm();
       if (res?.ok) {
         setSnack({ open: true, type: 'success', msg: 'Message sent! I’ll reply within 24 hours.' });
         setFormData({ name: '', email: '', subject: '', message: '', company: '' });

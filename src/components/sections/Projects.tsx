@@ -7,7 +7,8 @@ import {
   X, ExternalLink, Play, Image as ImageIcon, Tag, Search, ChevronLeft, ChevronRight, Sparkles
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { PROJECTS, ALL_TAGS, ALL_TECH, Project, ProjectMedia } from '../../data/projects';
+import { PROJECTS, ALL_TAGS, ALL_TECH } from '@/data/projects';
+import type { Project, ProjectMedia } from '@/data/projects';
 
 /**
  * Feature highlights:

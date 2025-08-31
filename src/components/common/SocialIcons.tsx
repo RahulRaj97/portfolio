@@ -1,7 +1,8 @@
+import { memo } from 'react';
 import { IconButton, Stack } from '@mui/material';
 import { Github, Linkedin, Mail } from 'lucide-react';
 
-import { SOCIAL } from '../../config/site';
+import { SOCIAL } from '@/config/site';
 
 const ICONS = {
   Mail,
@@ -9,7 +10,7 @@ const ICONS = {
   Linkedin,
 } as const;
 
-export default function SocialIcons({ size = 24 }: { size?: number }) {
+function SocialIcons({ size = 24 }: { size?: number }) {
   return (
     <Stack direction="row" spacing={2}>
       {SOCIAL.map((s) => {
@@ -42,3 +43,5 @@ export default function SocialIcons({ size = 24 }: { size?: number }) {
     </Stack>
   );
 }
+
+export default memo(SocialIcons);

@@ -1,9 +1,9 @@
 import { Box } from '@mui/material';
-import { motion, useSpring, useTransform } from 'framer-motion';
+import { motion, useSpring, useTransform, type MotionValue } from 'framer-motion';
 
 interface AuroraProps {
-  nx: any;
-  ny: any;
+  nx: MotionValue<number>;
+  ny: MotionValue<number>;
 }
 
 export function Aurora({ nx, ny }: AuroraProps) {
@@ -11,10 +11,7 @@ export function Aurora({ nx, ny }: AuroraProps) {
   const ay = useSpring(useTransform(ny, (n: number) => n * 16), { stiffness: 90, damping: 16 });
 
   return (
-    <motion.div
-      style={{ x: ax, y: ay }}
-      aria-hidden
-    >
+    <motion.div style={{ x: ax, y: ay }} aria-hidden>
       <Box
         sx={{
           position: 'absolute',

@@ -11,6 +11,14 @@
     <meta name="theme-color" content="#F59E0B" />
     <link rel="icon" href="/vite.svg" />
 
+    <!-- Preload hero image -->
+    <link
+      rel="preload"
+      as="image"
+      href="/profile_picture.jpeg"
+      fetchpriority="high"
+    />
+
     <!-- Open Graph -->
     <meta property="og:title" content="Rahul Raj — Full-Stack Engineer" />
     <meta
@@ -18,7 +26,7 @@
       content="Clean, scalable products—fast. Frontend, APIs, DevOps."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="/" />
+    <meta property="og:url" content="https://your-domain.com/" />
     <meta property="og:image" content="/profile_picture.jpeg" />
 
     <!-- Twitter -->
@@ -29,6 +37,23 @@
       content="Clean, scalable products—fast. Frontend, APIs, DevOps."
     />
     <meta name="twitter:image" content="/profile_picture.jpeg" />
+
+    <!-- Canonical + JSON-LD (edit your-domain.com) -->
+    <link rel="canonical" href="https://your-domain.com/" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Rahul Raj",
+        "jobTitle": "Full-Stack Engineer",
+        "email": "mailto:rahule.lohana97@gmail.com",
+        "url": "https://your-domain.com/",
+        "sameAs": [
+          "https://linkedin.com/in/rahulraj97",
+          "https://github.com/RahulRaj97"
+        ]
+      }
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

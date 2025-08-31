@@ -3,7 +3,6 @@ import { Box } from '@mui/material';
 export function PhotoCard() {
   return (
     <Box sx={{ position: 'relative', width: { xs: 320, sm: 360, md: 420 }, height: { xs: 320, sm: 360, md: 420 } }}>
-      {/* image container */}
       <Box
         sx={{
           position: 'relative',
@@ -20,6 +19,9 @@ export function PhotoCard() {
           component="img"
           src="/profile_picture.jpeg"
           alt="Rahul Raj - Full Stack Developer"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           sx={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
         />
       </Box>

@@ -14,6 +14,8 @@ export const NAV: readonly NavItem[] = [
   { label: "Contact", href: "#contact" },
 ] as const;
 
+export const CONTACT_EMAIL = "rahule.lohana97@gmail.com";
+
 export const SOCIAL: readonly SocialItem[] = [
   {
     label: "LinkedIn",
@@ -29,7 +31,7 @@ export const SOCIAL: readonly SocialItem[] = [
   },
   {
     label: "Email",
-    href: "mailto:rahule.lohana97@gmail.com",
+    href: `mailto:${CONTACT_EMAIL}`,
     icon: "Mail",
     color: "#EA4335",
   },

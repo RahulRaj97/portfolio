@@ -6,27 +6,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, ExternalLink, Play, Image as ImageIcon, Tag, Search, ChevronLeft, ChevronRight, Sparkles
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useDeferredValue } from 'react';
+
 import { PROJECTS, ALL_TAGS, ALL_TECH } from '@/data/projects';
 import type { Project, ProjectMedia } from '@/data/projects';
 
-/**
- * Feature highlights:
- * - Filter by tag / tech + text search
- * - Responsive grid
- * - Rich modal with gallery (images + YouTube/Vimeo/mp4)
- * - Keyboard nav: ← → next/prev, Esc close
- * - Graceful image fallback
- */
 
 export default function Projects() {
-  // ------- filters -------
   const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
   const [tag, setTag] = useState<string | 'All'>('All');
   const [tech, setTech] = useState<string | 'All'>('All');
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim();
+    const q = deferredQuery.toLowerCase().trim();
     return PROJECTS.filter((p) => {
       const matchQ =
         !q ||
@@ -38,16 +31,14 @@ export default function Projects() {
       const matchTech = tech === 'All' || p.tech.includes(tech);
       return matchQ && matchTag && matchTech;
     });
-  }, [query, tag, tech]);
+  }, [deferredQuery, tag, tech]);
 
-  // spotlight first
   const ordered = useMemo(() => {
     const s = filtered.filter(p => p.spotlight);
     const rest = filtered.filter(p => !p.spotlight);
     return [...s, ...rest];
   }, [filtered]);
 
-  // ------- modal state -------
   const [openId, setOpenId] = useState<string | null>(null);
   const activeIndex = useMemo(() => ordered.findIndex(p => p.id === openId), [ordered, openId]);
   const active = activeIndex >= 0 ? ordered[activeIndex] : null;
@@ -55,7 +46,6 @@ export default function Projects() {
 
   useEffect(() => { setMediaIndex(0); }, [openId]);
 
-  // keyboard navigation
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!active) return;
@@ -81,7 +71,6 @@ export default function Projects() {
   return (
     <Box id="projects" sx={{ py: { xs: 8, md: 12 }, position: 'relative' }}>
       <Container maxWidth="lg">
-        {/* Heading */}
         <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, mb: 2, p: 1.5, borderRadius: 999, border: '1px solid rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.08)' }}>
@@ -99,7 +88,6 @@ export default function Projects() {
           </Box>
         </motion.div>
 
-        {/* Filters */}
         <Paper elevation={0} sx={{ p: 2, borderRadius: 3, mb: 4, background: 'rgba(255,255,255,0.75)', border: t => `1px solid ${t.palette.divider}` }}>
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="center" justifyContent="space-between">
             <TextField
@@ -128,13 +116,12 @@ export default function Projects() {
                 value={tech}
                 onChange={setTech}
                 options={['All', ...ALL_TECH]}
-                icon={<ImageIcon size={14} />} // just a glyph; change if you want
+                icon={<ImageIcon size={14} />}
               />
             </Stack>
           </Stack>
         </Paper>
 
-        {/* Grid */}
         <Box
           sx={{
             display: 'grid',
@@ -158,7 +145,6 @@ export default function Projects() {
           </AnimatePresence>
         </Box>
 
-        {/* Modal */}
         <Dialog
           open={!!active}
           onClose={() => setOpenId(null)}
@@ -176,7 +162,6 @@ export default function Projects() {
         >
           {active && (
             <Box sx={{ position: 'relative' }}>
-              {/* Header */}
               <Box sx={{ p: 2.5, pb: 2 }}>
                 <Stack direction="row" alignItems="center" justifyContent="space-between">
                   <Typography variant="h5" sx={{ fontWeight: 800 }}>{active.title}</Typography>
@@ -192,14 +177,11 @@ export default function Projects() {
               </Box>
               <Divider />
 
-              {/* Body */}
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1.2fr 0.8fr' }, gap: 0 }}>
-                {/* Gallery */}
                 <Box sx={{ p: 2 }}>
                   <Gallery media={active.media} index={mediaIndex} onChange={setMediaIndex} />
                 </Box>
 
-                {/* Details */}
                 <Box sx={{ p: 2 }}>
                   {active.longDescription && (
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
@@ -223,7 +205,7 @@ export default function Projects() {
                   <Typography variant="overline" sx={{ fontWeight: 800, color: 'text.secondary' }}>Tags</Typography>
                   <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 2 }}>
                     {active.tags.map(t => (
-                      <Chip key={t} label={t} size="small" sx={{ background: 'rgba(245,158,11,0.08)', color: 'var(--color-primary-700)' }} />
+                      <Chip key={t} label={t} size="small" sx={{ background: 'rgba(245,158,11,0.08)', color: '#78350f' }} />
                     ))}
                   </Stack>
 
@@ -311,13 +293,14 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
         },
       }}
     >
-      {/* Cover */}
       <Box sx={{ position: 'relative', pt: '56.25%', background: 'linear-gradient(135deg, rgba(245,158,11,.12), rgba(20,184,166,.12))' }}>
         {cover && imgOk ? (
           <Box
             component="img"
             src={cover}
             alt={project.title}
+            loading="lazy"
+            decoding="async"
             onError={() => setImgOk(false)}
             sx={{
               position: 'absolute',
@@ -333,7 +316,6 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
           </Box>
         )}
 
-        {/* Top badges */}
         <Box sx={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
           {project.tags.slice(0, 3).map(t => (
             <Chip key={t} label={t} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.9)' }} />
@@ -343,7 +325,6 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
           )}
         </Box>
 
-        {/* Media indicator */}
         {project.media.some(m => m.type === 'video') && (
           <Box sx={{ position: 'absolute', bottom: 8, right: 8 }}>
             <Chip icon={<Play size={14} />} label="Video" size="small" sx={{ bgcolor: 'rgba(0,0,0,0.65)', color: 'white' }} />
@@ -351,7 +332,6 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
         )}
       </Box>
 
-      {/* Body */}
       <Box sx={{ p: 2 }}>
         <Typography variant="h6" sx={{ fontWeight: 800, mb: 0.5 }}>{project.title}</Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
@@ -388,7 +368,6 @@ function Gallery({
   const next = () => onChange(clamp(index + 1));
   const prev = () => onChange(clamp(index - 1));
 
-  // swipe support (simple)
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -412,7 +391,6 @@ function Gallery({
 
   return (
     <Box ref={ref} sx={{ position: 'relative' }}>
-      {/* Viewer */}
       <Box
         sx={{
           position: 'relative',
@@ -428,6 +406,8 @@ function Gallery({
               key={index + '-img'}
               src={item.src}
               alt={item.alt ?? 'Project image'}
+              loading="lazy"
+              decoding="async"
               initial={{ opacity: 0.0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
@@ -463,7 +443,6 @@ function Gallery({
           ) : null}
         </AnimatePresence>
 
-        {/* Arrows */}
         {has > 1 && (
           <>
             <IconButton
@@ -484,7 +463,6 @@ function Gallery({
         )}
       </Box>
 
-      {/* Thumbs */}
       {has > 1 && (
         <Stack direction="row" spacing={1} sx={{ mt: 1.5, overflowX: 'auto', pb: 0.5 }}>
           {media.map((m, i) => (
@@ -504,7 +482,7 @@ function Gallery({
               }}
             >
               {m.type === 'image' ? (
-                <Box component="img" src={m.src} alt="" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Box component="img" src={m.src} alt="" loading="lazy" decoding="async" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
                 <Box sx={{ display: 'grid', placeItems: 'center', width: '100%', height: '100%', color: 'white', background: 'black' }}>
                   <Play size={18} />

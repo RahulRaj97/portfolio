@@ -25,6 +25,7 @@ import {
   Check,
   ShieldCheck,
 } from 'lucide-react';
+import { CONTACT_EMAIL } from '@/config/site';
 
 export default function Contact() {
   /* ------------------------------- state -------------------------------- */
@@ -45,7 +46,7 @@ export default function Contact() {
   const [copied, setCopied] = useState(false);
 
   const messageCount = formData.message.length;
-  const emailAddress = useMemo(() => 'rahule.lohana97@gmail.com', []);
+  const emailAddress = useMemo(() => CONTACT_EMAIL, []);
 
   /* ---------------------------- handlers -------------------------------- */
   const handleInput = (

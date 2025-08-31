@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react';
  * - Cursor-follow glow (amber/teal)
  * - Gentle particles
  * - Noise layer to avoid banding
- * - Respects prefers-reduced-motion
+ * - Respects prefers-reduced-motion & page visibility
  */
 export default function Scene() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -15,7 +15,8 @@ export default function Scene() {
     const c = canvasRef.current!;
     const ctx = c.getContext('2d', { alpha: true })!;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let running = !document.hidden;
 
     let w = 0, h = 0, raf = 0;
     let last = 0, time = 0;
@@ -46,6 +47,13 @@ export default function Scene() {
       mouse.ty = e.clientY;
     };
     window.addEventListener('mousemove', onMove, { passive: true });
+
+    // Visibility & reduced-motion listeners
+    const onVis = () => { running = !document.hidden; };
+    document.addEventListener('visibilitychange', onVis);
+    const mq = matchMedia('(prefers-reduced-motion: reduce)');
+    const onMq = (e: MediaQueryListEvent) => { reduced = e.matches; };
+    mq.addEventListener?.('change', onMq);
 
     // Noise (to prevent banding)
     const noise = document.createElement('canvas');
@@ -78,6 +86,8 @@ export default function Scene() {
     };
 
     const draw = (ts: number) => {
+      if (!running) { raf = requestAnimationFrame(draw); return; }
+
       const dt = ts - last;
       last = ts;
       time += dt;
@@ -170,6 +180,8 @@ export default function Scene() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('visibilitychange', onVis);
+      mq.removeEventListener?.('change', onMq);
       ro.disconnect();
       ctx.clearRect(0, 0, w, h);
     };

@@ -54,7 +54,6 @@ export const PROJECTS: Project[] = [
       {
         type: "video",
         src: "/projects/usp-admissions/usp-demo.mp4",
-        alt: "USP Platform Demo Video",
       },
     ],
     spotlight: true,

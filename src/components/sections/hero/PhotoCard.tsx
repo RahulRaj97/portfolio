@@ -17,7 +17,7 @@ export function PhotoCard() {
       >
         <Box
           component="img"
-          src="/profile_picture.jpeg"
+          src="profile_picture.jpeg"
           alt="Rahul Raj - Full Stack Developer"
           loading="eager"
           decoding="async"

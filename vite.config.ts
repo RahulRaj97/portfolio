@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 
 export default defineConfig({
   plugins: [react()],
+  base: '/portfolio/',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -17,4 +18,12 @@ export default defineConfig({
       "@/config": path.resolve(__dirname, "./src/config"),
     },
   },
+  build: {
+    outDir: 'dist',
+    rollupOptions: {
+      input: {
+        main: 'index.html'
+      }
+    }
+  }
 });

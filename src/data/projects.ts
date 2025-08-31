@@ -49,11 +49,21 @@ export const PROJECTS: Project[] = [
         src: "/projects/usp-admissions/usp-main.jpeg",
         alt: "USP Main Website - Student Portal",
       },
-
-      // Demo Video
+      // Agent Platform (new images)
       {
-        type: "video",
-        src: "/projects/usp-admissions/usp-demo.mp4",
+        type: "image",
+        src: "/projects/usp-admissions/usp-agent-dashboard.jpeg",
+        alt: "Agent Dashboard",
+      },
+      {
+        type: "image",
+        src: "/projects/usp-admissions/usp-agent-programmes.jpeg",
+        alt: "Agent Programmes List",
+      },
+      {
+        type: "image",
+        src: "/projects/usp-admissions/usp-agent-program-detail.jpeg",
+        alt: "Agent Programme Detail",
       },
     ],
     spotlight: true,

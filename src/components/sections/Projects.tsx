@@ -97,16 +97,8 @@ export default function Projects() {
           open={!!active}
           onClose={() => setOpenId(null)}
           fullWidth
-          maxWidth="md"
-          PaperProps={{
-            sx: {
-              borderRadius: 3,
-              overflow: 'hidden',
-              background: 'rgba(255,255,255,0.96)',
-              border: '1px solid rgba(0,0,0,0.06)',
-              backdropFilter: 'blur(24px)',
-            },
-          }}
+          maxWidth="xl"
+          PaperProps={{ sx: { borderRadius: 3 } }}
         >
           {active && (
             <Box sx={{ position: 'relative' }}>
@@ -125,7 +117,7 @@ export default function Projects() {
               </Box>
               <Divider />
 
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1.2fr 0.8fr' }, gap: 0 }}>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1.4fr 0.6fr' }, gap: 0 }}>
                 <Box sx={{ p: 2 }}>
                   <Gallery media={active.media} index={mediaIndex} onChange={setMediaIndex} />
                 </Box>
@@ -390,8 +382,8 @@ function Gallery({
               key={i}
               onClick={() => onChange(i)}
               sx={{
-                width: 72,
-                height: 48,
+                width: 120,
+                height: 80,
                 borderRadius: 1.5,
                 overflow: 'hidden',
                 border: i === index ? '2px solid var(--color-primary-500)' : '1px solid rgba(0,0,0,0.1)',

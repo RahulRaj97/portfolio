@@ -374,7 +374,15 @@ function Gallery({
   onChange: (n: number) => void;
 }) {
   const has = media.length;
-  const clamp = (n: number) => (n + has) % has;
+  const clamp = (n: number) => (has ? (n + has) % has : 0);
+
+  if (!has) {
+    return (
+      <Box sx={{ p: 3, border: t => `1px solid ${t.palette.divider}`, borderRadius: 2, textAlign: 'center', color: 'text.secondary' }}>
+        No media yet.
+      </Box>
+    );
+  }
 
   const next = () => onChange(clamp(index + 1));
   const prev = () => onChange(clamp(index - 1));

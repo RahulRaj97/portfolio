@@ -1,19 +1,11 @@
 import { Box, Button, Chip, Container, Paper, Stack, Typography, Divider } from '@mui/material';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Globe, Code, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Sparkles } from 'lucide-react';
 import SocialIcons from '../common/SocialIcons';
 
 /* ------------------------------- config -------------------------------- */
 
-type Layer = { left: string; top: string; size: number; shape: 'dot' | 'square'; color: string; depth: number; Icon?: React.FC<any> };
-
-const layers: Layer[] = [
-  { left: '12%', top: '22%', size: 36, shape: 'dot',   color: 'var(--color-secondary-200)', depth: 10, Icon: Globe },
-  { left: '78%', top: '24%', size: 36, shape: 'dot',   color: 'var(--color-primary-200)',   depth: 18, Icon: Code  },
-  { left: '26%', top: '72%', size: 40, shape: 'square',color: 'var(--color-secondary-100)', depth: 26 },
-  { left: '84%', top: '66%', size: 44, shape: 'square',color: 'var(--color-primary-100)',   depth: 18 },
-];
 
 const WORDS = ['Ideas', 'Products', 'Revenue', 'Reality'];
 

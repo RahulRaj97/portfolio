@@ -5,7 +5,6 @@ import { useEffect, useRef } from 'react';
  * Warm personal background:
  * - Cursor-follow glow (amber/teal)
  * - Gentle particles
- * - Subtle "journey arc" (Pakistan → Germany) with a traveling dot
  * - Noise layer to avoid banding
  * - Respects prefers-reduced-motion
  */
@@ -28,10 +27,6 @@ export default function Scene() {
     const GLOW_CORE_ALPHA = 0.12;
     const EDGE_ALPHA = 0.00;
     const PULL = 0.06;
-    // Journey arc anchors in viewport percentages (approx Karachi → Munich)
-    const START = { px: 0.64, py: 0.64 }; // Karachi-ish (lower-right-ish)
-    const END   = { px: 0.36, py: 0.28 }; // Munich-ish (upper-left-ish)
-    const LIFT  = 0.18;                   // how high the arc bows
     // ---------------------------------
 
     const resize = () => {
@@ -80,92 +75,6 @@ export default function Scene() {
           maxLife: 140 + Math.random() * 160,
         });
       }
-    };
-
-    // Quadratic Bezier helpers
-    const lerp = (a:number, b:number, t:number) => a + (b - a) * t;
-    const quad = (p0:number, p1:number, p2:number, t:number) =>
-      (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
-
-    const drawJourneyArc = (t: number) => {
-      // anchors
-      const sx = START.px * w, sy = START.py * h;
-      const ex = END.px * w,   ey = END.py * h;
-      // control point: midpoint, lifted up
-      const cx = (sx + ex) / 2;
-      const cy = Math.min(sy, ey) - LIFT * h;
-
-      // path
-      const grad = ctx.createLinearGradient(sx, sy, ex, ey);
-      grad.addColorStop(0, 'rgba(16,185,129,0.28)'); // emerald-ish near start
-      grad.addColorStop(1, 'rgba(245,158,11,0.28)'); // amber near end
-
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = grad;
-      ctx.setLineDash([6, 6]);
-      ctx.beginPath();
-      for (let i = 0; i <= 60; i++) {
-        const tt = i / 60;
-        const x = quad(sx, cx, ex, tt);
-        const y = quad(sy, cy, ey, tt);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // endpoints (rings)
-      const ring = (x:number, y:number, color:string) => {
-        ctx.beginPath();
-        ctx.arc(x, y, 6, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.globalAlpha = 0.7;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.beginPath();
-        ctx.arc(x, y, 14, 0, Math.PI * 2);
-        ctx.strokeStyle = color.replace('1)', '0.35)').replace('0.9)', '0.35)');
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      };
-      ring(sx, sy, 'rgba(16,185,129,0.9)');
-      ring(ex, ey, 'rgba(245,158,11,0.9)');
-
-      // traveler dot along arc
-      const speed = 0.00008; // ms-based speed
-      const wobble = Math.sin(time * 0.0015) * 0.02;
-      const hoverBoost = (mouse.x / Math.max(1, w) - 0.5) * 0.04;
-      const tt = (time * speed + wobble + hoverBoost) % 1;
-      const x = quad(sx, cx, ex, tt);
-      const y = quad(sy, cy, ey, tt);
-      const dx = (1 - tt) * (cx - sx) + tt * (ex - cx);
-      const dy = (1 - tt) * (cy - sy) + tt * (ey - cy);
-      const ang = Math.atan2(dy, dx);
-
-      // glow
-      const g = ctx.createRadialGradient(x, y, 0, x, y, 26);
-      g.addColorStop(0, 'rgba(245,158,11,0.35)');
-      g.addColorStop(1, 'rgba(245,158,11,0.0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(x - 30, y - 30, 60, 60);
-
-      // dot + tiny pointer
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(245,158,11,0.95)';
-      ctx.fill();
-
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(ang);
-      ctx.beginPath();
-      ctx.moveTo(6, 0);
-      ctx.lineTo(-4, 3);
-      ctx.lineTo(-4, -3);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(245,158,11,0.85)';
-      ctx.fill();
-      ctx.restore();
     };
 
     const draw = (ts: number) => {
@@ -245,9 +154,6 @@ export default function Scene() {
           }
         }
       }
-
-      // journey arc (always drawn)
-      drawJourneyArc(time);
 
       // noise overlay tiles
       for (let x = 0; x < w; x += NOISE)

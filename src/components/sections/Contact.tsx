@@ -152,7 +152,7 @@ export default function Contact() {
                 lineHeight: 1.1,
               }}
             >
-              Let’s build something great
+              Ready to build something
               <br />
               <span
                 style={{
@@ -162,9 +162,8 @@ export default function Contact() {
                   color: 'transparent',
                 }}
               >
-                together
+                amazing?
               </span>
-              .
             </Typography>
 
             <Typography
@@ -177,8 +176,7 @@ export default function Contact() {
                 lineHeight: 1.45,
               }}
             >
-              Prefer a quick email? Use a button below. Want to share context? Fill the form — I’ll
-              respond fast with clear next steps.
+              Whether you're in Germany, Pakistan, or anywhere else in the world, I'm always excited to discuss new projects, collaborations, or just chat about technology. I respond quickly and love hearing about innovative ideas.
             </Typography>
           </Box>
         </motion.div>
@@ -306,7 +304,26 @@ export default function Contact() {
                   </Avatar>
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                      Typical response
+                      Location
+                    </Typography>
+                    <Typography variant="body1">Munich, Germany (CET)</Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar
+                    sx={{
+                      bgcolor: '#10B981',
+                      width: 48,
+                      height: 48,
+                      boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
+                    }}
+                  >
+                    <Clock size={22} color="white" />
+                  </Avatar>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                      Response time
                     </Typography>
                     <Typography variant="body1">Within 24 hours</Typography>
                   </Box>

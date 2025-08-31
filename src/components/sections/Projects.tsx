@@ -1,43 +1,23 @@
 import {
-  Box, Chip, Container, Dialog, Divider, IconButton, InputAdornment, Paper,
-  Stack, TextField, Typography, Button
+  Box, Chip, Container, Dialog, Divider, IconButton, Paper,
+  Stack, Typography, Button
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, ExternalLink, Play, Image as ImageIcon, Tag, Search, ChevronLeft, ChevronRight, Sparkles
+  X, ExternalLink, Play, Image as ImageIcon, ChevronLeft, ChevronRight, Sparkles
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState, useDeferredValue } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { PROJECTS, ALL_TAGS, ALL_TECH } from '@/data/projects';
+import { PROJECTS } from '@/data/projects';
 import type { Project, ProjectMedia } from '@/data/projects';
 
 
 export default function Projects() {
-  const [query, setQuery] = useState('');
-  const deferredQuery = useDeferredValue(query);
-  const [tag, setTag] = useState<string | 'All'>('All');
-  const [tech, setTech] = useState<string | 'All'>('All');
-
-  const filtered = useMemo(() => {
-    const q = deferredQuery.toLowerCase().trim();
-    return PROJECTS.filter((p) => {
-      const matchQ =
-        !q ||
-        p.title.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.tech.join(' ').toLowerCase().includes(q) ||
-        p.tags.join(' ').toLowerCase().includes(q);
-      const matchTag = tag === 'All' || p.tags.includes(tag);
-      const matchTech = tech === 'All' || p.tech.includes(tech);
-      return matchQ && matchTag && matchTech;
-    });
-  }, [deferredQuery, tag, tech]);
-
   const ordered = useMemo(() => {
-    const s = filtered.filter(p => p.spotlight);
-    const rest = filtered.filter(p => !p.spotlight);
+    const s = PROJECTS.filter(p => p.spotlight);
+    const rest = PROJECTS.filter(p => !p.spotlight);
     return [...s, ...rest];
-  }, [filtered]);
+  }, []);
 
   const [openId, setOpenId] = useState<string | null>(null);
   const activeIndex = useMemo(() => ordered.findIndex(p => p.id === openId), [ordered, openId]);
@@ -80,47 +60,15 @@ export default function Projects() {
               </Typography>
             </Box>
             <Typography variant="h2" sx={{ fontWeight: 800 }}>
-              Selected Projects
+              Featured Projects
             </Typography>
             <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 720, mx: 'auto', mt: 1.5 }}>
-              A mix of shipped work and deep, technical builds. Images & videos are placeholders—drop yours in <code>public/projects</code>.
+              Showcasing enterprise-level applications and full-stack solutions that demonstrate technical expertise and business impact.
             </Typography>
           </Box>
         </motion.div>
 
-        <Paper elevation={0} sx={{ p: 2, borderRadius: 3, mb: 4, background: 'rgba(255,255,255,0.75)', border: t => `1px solid ${t.palette.divider}` }}>
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="center" justifyContent="space-between">
-            <TextField
-              fullWidth
-              placeholder="Search projects (title, tags, tech)…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search size={18} />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-              <FilterChips
-                label="Tag"
-                value={tag}
-                onChange={setTag}
-                options={['All', ...ALL_TAGS]}
-                icon={<Tag size={14} />}
-              />
-              <FilterChips
-                label="Tech"
-                value={tech}
-                onChange={setTech}
-                options={['All', ...ALL_TECH]}
-                icon={<ImageIcon size={14} />}
-              />
-            </Stack>
-          </Stack>
-        </Paper>
+
 
         <Box
           sx={{
@@ -238,40 +186,6 @@ export default function Projects() {
 
 /* --------------------------- Subcomponents --------------------------- */
 
-function FilterChips({
-  label, value, onChange, options, icon,
-}: {
-  label: string;
-  value: string | 'All';
-  onChange: (v: any) => void;
-  options: string[];
-  icon?: React.ReactNode;
-}) {
-  return (
-    <Stack direction="row" spacing={1} alignItems="center">
-      <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary' }}>
-        {icon} {label}:
-      </Typography>
-      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-        {options.map(opt => (
-          <Chip
-            key={opt}
-            label={opt}
-            size="small"
-            variant={value === opt ? 'filled' : 'outlined'}
-            onClick={() => onChange(opt)}
-            sx={{
-              ...(value === opt
-                ? { background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-secondary-500))', color: '#fff' }
-                : { borderColor: 'var(--color-neutral-300)' }),
-            }}
-          />
-        ))}
-      </Stack>
-    </Stack>
-  );
-}
-
 function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void }) {
   const [imgOk, setImgOk] = useState(true);
   const cover = project.cover ?? (project.media.find(m => m.type === 'image') as ProjectMedia | undefined)?.src;
@@ -307,7 +221,13 @@ function ProjectCard({ project, onOpen }: { project: Project; onOpen: () => void
               inset: 0,
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
+              objectFit: 'contain',
+              padding: '40px',
+              maxWidth: '80%',
+              maxHeight: '80%',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
             }}
           />
         ) : (

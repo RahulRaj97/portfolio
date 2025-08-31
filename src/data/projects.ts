@@ -23,59 +23,40 @@ export type Project = {
 
 export const PROJECTS: Project[] = [
   {
-    id: "device-manager",
-    title: "Device Manager Portal",
+    id: "usp-admissions",
+    title: "USP Admissions Platform",
     description:
-      "Admin portal for managing mobile mapping devices with an operator-first UX.",
+      "Comprehensive international education platform connecting students, agents, and institutions worldwide.",
     longDescription:
-      "Focused on reliability and ergonomic workflows. Integrated diagnostics, fleet views, and fast search. Built to be resilient under spotty connections.",
-    tags: ["B2B", "Ops"],
-    tech: ["React", "TypeScript", "Vite", "Python"],
-    links: [
-      { label: "Case Study", href: "#" },
-      { label: "Live (Auth)", href: "#" },
+      "Built a comprehensive full-stack platform enabling students to discover and apply to international educational programs worldwide. The system includes AI-powered document verification, real-time analytics dashboards, and comprehensive user management for students, agents, and educational institutions. Features include advanced search and matching algorithms, application management workflows, and secure communication tools.",
+    tags: ["B2B", "Education", "SaaS", "AI/ML"],
+    tech: [
+      "React",
+      "TypeScript",
+      "MongoDB",
+      "AWS",
+      "ElasticSearch",
+      "Node.js",
+      "Redis",
+      "Socket.IO",
     ],
-    cover: "/profile_picture.jpeg", // replace with /projects/device-manager/cover.jpg
+    links: [{ label: "Live Platform", href: "https://www.uspadmissions.com" }],
+    cover: "/projects/usp-admissions/usp-logo.png", // Company logo as cover
     media: [
-      { type: "image", src: "/profile_picture.jpeg", alt: "Device Manager UI" },
-      // Example video entry (replace with your real YouTube ID or mp4 file)
+      // Main USP Website (Student Portal)
+      {
+        type: "image",
+        src: "/projects/usp-admissions/usp-main.jpeg",
+        alt: "USP Main Website - Student Portal",
+      },
+
+      // Demo Video
       {
         type: "video",
-        provider: "youtube",
-        src: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        src: "/projects/usp-admissions/usp-demo.mp4",
+        alt: "USP Platform Demo Video",
       },
     ],
     spotlight: true,
   },
-  {
-    id: "navigator",
-    title: "Navigator: Data Discovery",
-    description:
-      "Service-level data views with freshness tracking and microservice drilldowns.",
-    tags: ["Data", "Internal Tool"],
-    tech: ["Kubernetes", "Airflow", "Superset"],
-    links: [{ label: "Overview", href: "#" }],
-    media: [
-      { type: "image", src: "/vite.svg", alt: "Mock" },
-      { type: "image", src: "/vite.svg", alt: "Mock 2" },
-    ],
-  },
-  {
-    id: "chikoo",
-    title: "Chikoo Commerce",
-    description:
-      "WhatsApp ordering, vouchers, and conversion-focused storefronts.",
-    tags: ["E-commerce"],
-    tech: ["React", "Node.js", "MongoDB", "GCP"],
-    links: [{ label: "Website", href: "#" }],
-    media: [{ type: "image", src: "/vite.svg", alt: "Chikoo" }],
-  },
 ];
-
-// Helper: derive all tag filters from data
-export const ALL_TAGS = Array.from(
-  new Set(PROJECTS.flatMap((p) => p.tags))
-).sort();
-export const ALL_TECH = Array.from(
-  new Set(PROJECTS.flatMap((p) => p.tech))
-).sort();

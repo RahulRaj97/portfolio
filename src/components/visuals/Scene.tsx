@@ -14,7 +14,8 @@ export default function Scene() {
   useEffect(() => {
     const c = canvasRef.current!;
     const ctx = c.getContext('2d', { alpha: true })!;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const isLowPower = navigator.hardwareConcurrency ? navigator.hardwareConcurrency <= 4 : false;
+    const dpr = Math.min(window.devicePixelRatio || 1, isLowPower ? 1.5 : 2);
     let reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     let running = !document.hidden;
 
@@ -22,8 +23,8 @@ export default function Scene() {
     let last = 0, time = 0;
 
     // ---------- tweakables ----------
-    const PARTICLES = 34;
-    const LINK_DIST = 100;
+    const PARTICLES = isLowPower ? 22 : 34;
+    const LINK_DIST = isLowPower ? 80 : 100;
     const GLOW_RADIUS_FRAC = 0.33;
     const GLOW_CORE_ALPHA = 0.12;
     const EDGE_ALPHA = 0.00;
@@ -58,7 +59,7 @@ export default function Scene() {
     // Noise (to prevent banding)
     const noise = document.createElement('canvas');
     const nctx = noise.getContext('2d')!;
-    const NOISE = 140;
+    const NOISE = isLowPower ? 160 : 140;
     noise.width = NOISE; noise.height = NOISE;
     const img = nctx.createImageData(NOISE, NOISE);
     for (let i = 0; i < img.data.length; i += 4) {

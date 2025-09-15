@@ -17,11 +17,11 @@ export function PhotoCard() {
       >
         <Box
           component="img"
-          src="profile_picture.jpeg"
+          src="/profile_picture.jpeg"
           alt="Rahul Raj - Full Stack Developer"
-          loading="eager"
+          loading="lazy"
           decoding="async"
-          fetchPriority="high"
+          fetchPriority="auto"
           sx={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }}
         />
       </Box>

@@ -30,7 +30,7 @@ export const PAPERS: Paper[] = [
     links: [
       {
         label: "PDF",
-        href: "https://arxiv.org/pdf/2501.18225#page=5&zoom=100,416,714",
+        href: "https://arxiv.org/pdf/2501.18225",
       },
     ],
   },

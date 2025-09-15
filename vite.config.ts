@@ -20,9 +20,22 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    cssCodeSplit: true,
+    sourcemap: false,
+    minify: "esbuild",
     rollupOptions: {
       input: {
         main: "index.html",
+      },
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("@mui")) return "vendor-mui";
+            if (id.includes("framer-motion")) return "vendor-motion";
+            if (id.includes("lucide-react")) return "vendor-icons";
+            return "vendor";
+          }
+        },
       },
     },
   },

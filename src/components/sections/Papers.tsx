@@ -1,6 +1,6 @@
 import { Box, Chip, Container, IconButton, Paper as MuiPaper, Stack, Typography, Button } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, BookOpen, ChevronRight } from 'lucide-react';
+import { ExternalLink, BookOpen } from 'lucide-react';
 
 import { PAPERS, type Paper } from '@/data/papers';
 

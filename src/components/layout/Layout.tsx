@@ -8,6 +8,7 @@ import Scene from '@/components/visuals/Scene';
 import Hero from '@/components/sections/Hero';
 
 const Experience = lazy(() => import('@/components/sections/Experience'));
+const Papers = lazy(() => import('@/components/sections/Papers'));
 const Projects = lazy(() => import('@/components/sections/Projects'));
 const Contact = lazy(() => import('@/components/sections/Contact'));
 
@@ -47,6 +48,9 @@ export const Layout: React.FC = () => {
           </Suspense>
           <Suspense fallback={<SectionSkeleton />}>
             <Projects />
+          </Suspense>
+          <Suspense fallback={<SectionSkeleton />}>
+            <Papers />
           </Suspense>
           <Suspense fallback={<SectionSkeleton />}>
             <Contact />
